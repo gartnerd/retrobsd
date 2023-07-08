@@ -2,24 +2,27 @@
 # Build VirtualMIPS simulator.
 #
 
-# Select target board:
-# chipKIT Max32
-CFLAGS		= -DSIM_PIC32 -DPIC32MX7 -DMAX32
+#DG - most of the ideas for reworking this file comes from
+#DG - https://make.mad-scientist.net/papers/advanced-auto-dependency-generation/
 
-# Maximite
-#CFLAGS		= -DSIM_PIC32 -DPIC32MX7 -DMAXIMITE
+PROG		:= pic32
+SRCS		:= $(wildcard *.c)
 
-# Microchip Explorer 16
-#CFLAGS		= -DSIM_PIC32 -DPIC32MX7 -DEXPLORER16
+#DG - these files are used with different options (see further below) or
+#DG - by the makefile Makefile-m4k
+EXCLUDED_SRCS	:= mips_codetable.c mips16-opc.c mips-opc.c pavo.c m4k.c
 
-# UBW32 with UART console
-#CFLAGS		= -DSIM_PIC32 -DPIC32MX7 -DUBW32
+#DG - the following file doesn't appear to be used for anything
+EXCLUDED_SRCS	+= dev_nor_flash_4m.c
 
-CC          = gcc -g -m32
-CFLAGS		+= -Wall -MT $@ -MD -MP -MF .deps/$*.dep 
-LIBS		= -lpthread
+FILTERED_SRCS 	:= $(filter-out $(EXCLUDED_SRCS),$(SRCS))
+OBJS		:= $(patsubst %.c,%.o,$(FILTERED_SRCS))
 
-CFLAGS      += $(shell pkg-config libelf --cflags)
+CC          	?= gcc
+LDFLAGS 	:= -m32
+DEPDIR		:= .deps
+DEPFLAGS	= -MT $@ -MMD -MP -MF $(DEPDIR)/$*.d
+LIBS		:= -lpthread
 LIBS		+= $(shell pkg-config libelf --libs)
 
 ifneq ($(wildcard /usr/lib/librt.a),)
@@ -28,20 +31,27 @@ endif
 ifneq ($(wildcard /usr/lib/i386-linux-gnu/librt.a),)
 LIBS		+= -lrt                             # Linux
 endif
-ifneq ($(wildcard /opt/local/lib/libintl.a),)
-LIBS		+= -L/opt/local/lib -lintl          # Mac OS X
-endif
 
-# Optimization.
-CFLAGS		+= -O
-#CFLAGS		+= -O3 -fomit-frame-pointer
+#DG - common compiler and preproccessor flags for target boards
+#DG - possible optimization
+#DG - CFLAGS	+= -O3 -fomit-frame-pointer
+CFLAGS		:= -g -m32 -O -Wall 
+CFLAGS      	+= $(shell pkg-config libelf --cflags)
 
-PROG		= pic32
-OBJS		= pic32.o pic32_dev_flash.o pic32_dev_uart.o pic32_dev_intcon.o \
-              pic32_dev_spi.o pic32_dev_gpio.o dev_sdcard.o dev_swap.o \
-              pic32_dev_bmxcon.o pic32_dev_dmacon.o pic32_dev_syscon.o \
-              pic32_dev_prefetch.o pic32_dev_adc.o pic32_dev_devcfg.o \
-              pic32_dev_rtcc.o pic32_dev_timer.o
+CPPFLAGS	:= -DSIM_PIC32 -DPIC32MX7
+
+# Select target board:
+# chipKIT Max32
+CPPFLAGS	+= -DMAX32
+
+# Maximite
+#CPPFLAGS		+= -DMAXIMITE
+
+# Microchip Explorer 16
+#CPPFLAGS		+= -DEXPLORER16
+
+# UBW32 with UART console
+#CPPFLAGS		+= -DUBW32
 
 # Ingenic JZ4740.
 #CFLAGS		+= -DSIM_PAVO -D_USE_FDD_
@@ -60,25 +70,38 @@ OBJS		= pic32.o pic32_dev_flash.o pic32_dev_uart.o pic32_dev_intcon.o \
 #CFLAGS		+= -D_USE_JIT_
 #OBJS		+= mips_jit.o x86_trans.o
 
-# Common files.
-OBJS		+= dev_cs8900.o dev_nand_flash_1g.o dev_ram.o \
-               dev_vtty.o device.o vm.o cpu.o mips.o mips_cp0.o \
-               mips_exec.o mips_fdd.o crc.o mips_hostalarm.o \
-               mempool.o sbox.o utils.o vp_clock.o vp_timer.o net_io.o \
-               mips_memory.o debug.o gdb_interface.o main.o \
-               mips-dis.o config.o
-
-all:		.deps $(PROG)
+all:		$(DEPDIR) $(PROG)
 
 $(PROG):	$(OBJS)
-			$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
+		$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
 
-.deps:
-			@mkdir .deps
+#DG - remove implicit rules for creating object files - will use our own
+#DG - the empty recipe for this target is supposed to accomplish this
+%.o:		%.c
+
+#DG - create a specific rule to replace the rule
+#DG - "| $(DEPDIR) - is an order only rule - no timestamps, it just has to exist
+%.o:		%.c $(DEPDIR)/%.d | $(DEPDIR)
+		$(CC) $(DEPFLAGS) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c $(OUTPUT_OPTION) $<
 
 clean:
-			rm -rf *.o *~ *_log.txt .deps pavo pic32 m4k
+		rm -rf *.o *~ *_log.txt $(DEPDIR) pavo pic32 m4k
 
-ifeq (.deps, $(wildcard .deps))
--include .deps/*.dep
-endif
+$(DEPDIR):
+		@mkdir -p $@
+
+#DG - the following is some magic for dependencies
+DEPFILES 	:= $(patsubst %.c,$(DEPDIR)/%.d,$(FILTERED_SRCS))
+
+#DG - this is a file target. Make tries to match the list of files represented
+#DG - by the target once it is expanded. It will try to recreate any that don't exist
+#DG - I'm not sure how exactly it does this - possibly by recompiling the corresponding
+#DG - object file
+$(DEPFILES):
+
+#DG - this causes make to incorporate the generated dependency information
+#DG - into the build process
+#DG - this should come after the initial build target or trouble will ensue... apparently
+#DG - keeping it at the end of the file should be fine for most cases
+include $(wildcard $(DEPFILES))
+

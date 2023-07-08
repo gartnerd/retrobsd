@@ -1,16 +1,17 @@
-CC		= gcc -g -m32
-CFLAGS		= -O -Wall
-DESTDIR		= /usr/local
+CC		?= gcc
+CFLAGS		= -g -m32 -O -Wall
+LDFLAGS		= -m32
+PREFIX		= /usr/local
+BINDIR		= $(PREFIX)/bin
 OBJS		= ice2aout.o
 PROG		= ice2aout
 
-# For Mac OS X
-#LIBS		= -largp
+.PHONY:		all install clean
 
 all:		$(PROG)
 
 install:	$(PROG)
-		install -s $(PROG) ${DESTDIR}/bin/$(PROG)
+		install -s $(PROG) $(BINDIR)
 clean:
 		rm -f *~ *.o *.lst *.dis $(PROG)
 

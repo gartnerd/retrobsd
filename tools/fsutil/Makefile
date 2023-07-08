@@ -1,19 +1,21 @@
-CC		= gcc -g
-CFLAGS		= -O -Wall -m32
+CC		?= gcc
+CFLAGS		= -g -O -Wall -m32
+LDFLAGS		= -m32
 DESTDIR		= /usr/local
-OBJS		= fsutil.o superblock.o block.c inode.o create.o check.o \
-                  file.o mount.o manifest.o
+BINDIR		= $(DESTDIR)/bin
+OBJS		= $(patsubst %.c,%.o,$(wildcard *.c)) 
 PROG		= fsutil
+
+.PHONY:		all install clean
 
 # Enable mount option.
 #ENABLE_FUSE    = 1
 
-# For Mac OS X
-ifneq ($(wildcard /usr/local/lib/pkgconfig),)
-    FUSE_PATH   = /usr/local/lib/pkgconfig
-endif
+# removed OS X related code
 
-# Fuse
+# Fuse - userspace file system. See man 8 fuse for details
+# FUSE_PATH may get defined in another Makefile
+# currently pkg-config fuse --whatever doesn't work on my system
 ifneq ($(ENABLE_FUSE),)
     CFLAGS       += -DENABLE_FUSE
     MOUNT_CFLAGS = -DFUSE_USE_VERSION=26
@@ -24,13 +26,14 @@ endif
 all:		$(PROG)
 
 install:	$(PROG)
-		install -s $(PROG) ${DESTDIR}/bin/$(PROG)
+		install -s $(PROG) $(BINDIR)
 clean:
-		rm -rf *~ *.o *.lst *.dis $(PROG) $(PROG).dSYM
+		rm -rf *~ *.o *.lst *.dis $(PROG)
 
 $(PROG):	$(OBJS)
-		$(CC) -m32 $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
+		$(CC) $(LDFLAGS) -o $@ $(OBJS)
 
+#some magic numbers in this target
 root.bin:       $(PROG)
 		./$(PROG) -n16384 -s2048 $@
 		./$(PROG) -v $@
@@ -39,14 +42,15 @@ root.bin:       $(PROG)
 swap.bin:
 		dd bs=1k count=2048 < /dev/zero > $@
 
-mount.o: mount.c bsdfs.h
-		$(CC) $(CFLAGS) $(MOUNT_CFLAGS) -c -o $@ $<
+mount.o:	CFLAGS += $(MOUNT_CFLAGS)
+mount.o: 	mount.c bsdfs.h
+		$(CC) $(CFLAGS) -c -o $@ $<
 
-block.o: block.c bsdfs.h
-check.o: check.c bsdfs.h
-create.o: create.c bsdfs.h
-file.o: file.c bsdfs.h
-fsutil.o: fsutil.c bsdfs.h manifest.h
-inode.o: inode.c bsdfs.h
-manifest.o: manifest.c bsdfs.h manifest.h
-superblock.o: superblock.c bsdfs.h
+block.o: 	block.c bsdfs.h
+check.o: 	check.c bsdfs.h
+create.o: 	create.c bsdfs.h
+file.o: 	file.c bsdfs.h
+fsutil.o: 	fsutil.c bsdfs.h manifest.h
+inode.o: 	inode.c bsdfs.h
+manifest.o: 	manifest.c bsdfs.h manifest.h
+superblock.o: 	superblock.c bsdfs.h
