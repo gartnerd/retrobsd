@@ -1,9 +1,12 @@
 TOPSRC		= $(shell cd ../..; pwd)
+
 include $(TOPSRC)/target.mk
 
 LIBCDIR          = $(TOPSRC)/src/libc
+
 vpath %.S $(LIBCDIR)/mips/sys $(LIBCDIR)/mips/string $(LIBCDIR)/mips/gen \
           $(LIBCDIR)/runtime
+
 vpath %.c $(LIBCDIR)/mips/sys $(LIBCDIR)/gen $(LIBCDIR)/stdio \
           $(LIBCDIR)/stdlib $(LIBCDIR)/string $(LIBCDIR)/inet \
           $(LIBCDIR)/compat $(LIBCDIR)/runtime
@@ -40,16 +43,27 @@ SYSOBJS		= __sysctl.o accept.o access.o adjtime.o bind.o chdir.o \
 OBJS		= $(SYSOBJS) sbrk.o execl.o execle.o execv.o \
 		  _exit.o _brk.o pipe.o ptrace.o sigaction.o
 
+#TODO - check if including extra files with the wildcard
+#match. May have to filter the results of some of the matches
+#see the filter files in myretrobsd/tmp
+
 # libc/mips/string
 ASFLAGS         += -DLWHI=lwr -DLWLO=lwl -DSWHI=swr -DSWLO=swl
-OBJS            += bcopy.o bzero.o ffs.o memcpy.o memmove.o memset.o \
+#OBJS            += bcopy.o bzero.o ffs.o memcpy.o memmove.o memset.o \
                    strlen.o bcmp.o index.o rindex.o strcmp.o
 
+MIPS_STRING_ASR = $(wildcard $(LIBCDIR)/mips/string/*.S)
+#MIPS_STRING_CSR = $(wildcard $(LIBCDIR)/mips/string/*.c)
+#MIPS_STRING_SRCS = $(MIPS_STR_ASR) $(MIPS_STRING_CSR)
+MIPS_STRING_OBJS  = $(patsubst %.S,%.o,$(MIPS_STRING_ASR))
+#MIPS_STRING_OBJS += $(patsubst %.c,%.o,$(MIPS_STRING_CSR))
+
+
 # libc/mips/gen
-OBJS            += _setjmp.o htonl.o htons.o
+MIPS_GEN_OBJS            = _setjmp.o htonl.o htons.o
 
 # libc/gen
-OBJS            += abort.o alarm.o atof.o atoi.o atol.o calloc.o closedir.o crypt.o \
+#OBJS            += abort.o alarm.o atof.o atoi.o atol.o calloc.o closedir.o crypt.o \
                    ctime.o ctype_.o daemon.o devname.o ecvt.o err.o \
                    execvp.o fakcu.o frexp.o fstab.o gcvt.o getenv.o getgrent.o \
                    getgrgid.o getgrnam.o getlogin.o \
@@ -66,8 +80,15 @@ OBJS            += abort.o alarm.o atof.o atoi.o atol.o calloc.o closedir.o cryp
                    telldir.o time.o timezone.o ttyname.o ttyslot.o ualarm.o usleep.o \
                    strdup.o uname.o wait.o wait3.o waitpid.o
 
+LIBC_GEN_CSR = $(wildcard $(LIBCDIR)/gen/*.c)
+LIBC_GEN_OBJS = $(patsubst %.c,%.o,$(LIBC_GEN_CSR))
+G_EXCLUDED_SRCS = abs.c bcmp-disabled.c bcopy-disabled.c bzero-disabled.c fabs.c \
+	   ffs-disabled.c index-disabled.c insque.c isinf.c isnan.c modf.c \
+	   remque.c rindex-disabled.c strcmp-disabled.c strlen-disabled.c \
+	   valloc.c
+
 # libc/stdio
-OBJS            += fgetc.o fgets.o fputc.o fputs.o gets.o puts.o \
+#OBJS            += fgetc.o fgets.o fputc.o fputs.o gets.o puts.o \
                    clrerr.o doscan.o exit.o fdopen.o filbuf.o findiop.o \
                    flsbuf.o fopen.o fprintf.o fread.o freopen.o fseek.o \
                    ftell.o fwrite.o getchar.o getw.o printf.o putchar.o putw.o \
@@ -75,28 +96,51 @@ OBJS            += fgetc.o fgets.o fputc.o fputs.o gets.o puts.o \
                    strout.o ungetc.o vfprintf.o vprintf.o vsprintf.o doprnt.o \
                    remove.o feof.o ferror.o fileno.o
 
+LIBC_STDIO_CSR = $(wildcard $(LIBCDIR)/stdio/*.c)
+LIBC_STDIO_OBJS = $(patsubst %.c,%.o,$(LIBC_STDIO_CSR))
+EXECLUDE = clnup.c
+
 # libc/stdlib
-OBJS            += getopt.o getsubopt.o strtol.o strtoul.o strtod.o
+#OBJS            += getopt.o getsubopt.o strtol.o strtoul.o strtod.o
+
+LIBC_STDLIB_CSR = $(wildcard $(LIBCDIR)/stdlib/*.c)
+LIBC_STDLIB_OBJS = $(patsubst %.c,%o,$(LIBC_STDLIB_CSR))
 
 # libc/string
-OBJS            += strcspn.o strpbrk.o strerror.o strsep.o strspn.o \
+#OBJS            += strcspn.o strpbrk.o strerror.o strsep.o strspn.o \
                    strstr.o strtok.o strtok_r.o
 
+LIBC_STR_CSR = $(wildcard $(LIBCDIR)/string/*.c)
+LIBC_STR_OBJS = $(patsubst %.c,%.o,$(LIBC_STR_CSR))
+
 # libc/inet
-OBJS            += inet_addr.o inet_network.o inet_netof.o \
+#OBJS            += inet_addr.o inet_network.o inet_netof.o \
                    inet_ntoa.o inet_lnaof.o inet_maddr.o
 
+LIBC_INET_CSR = $(wildcard $(LIBCDIR)/inet/*.c)
+LIBC_INET_OBJS = $(patsubst %.c,%.o,$(LIBCDIR))
+
 # libc/compat
-OBJS            += creat.o ftime.o gethostid.o memccpy.o memchr.o \
+#OBJS            += creat.o ftime.o gethostid.o memccpy.o memchr.o \
                    memcmp.o memcpy.o memset.o nice.o pause.o rand.o \
                    sethostid.o setregid.o setreuid.o setrgid.o setruid.o \
                    sigcompat.o strchr.o strrchr.o times.o tmpnam.o \
                    utime.o
 
+LIBC_COMPAT_CSR = $(wildcard $(LIBCDIR)/compat/*.c)
+LIBC_COMPAT_OBJS = $(patsubst %.c,%.o,$(LIBC_COMPAT_CSR))
+
+
 # libc/runtime
-OBJS            += addsf3.o comparesf2.o divsf3.o fixsfsi.o floatsisf.o \
+#OBJS            += addsf3.o comparesf2.o divsf3.o fixsfsi.o floatsisf.o \
                    mulsf3.o negsf2.o subsf3.o sc_case.o fixunssfsi.o \
                    floatunsisf.o
+
+#one assmbler file - sc_case.S
+LIBC_RUNTIME_CSR = $(wildcard $(LIBCDIR)/runtime/*.c)
+LIBC_RUNTIME_OBJS = $(patsubst %.c,%.o,$(LIBC_RUNTIME_CSR)) sc_case.o
+
+
 
 all:            ../libc.a
 
@@ -109,4 +153,4 @@ $(SYSOBJS):	$(LIBCDIR)/mips/sys/SYS.h
 		@printf '#include "SYS.h"\nSYS($*)\n' | $(AS) $(ASFLAGS) - -c -o $*.o
 
 clean:
-		rm -f *~ *.o a.out *.a
+		(rm -f *~ *.o a.out *.a
