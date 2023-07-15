@@ -11,8 +11,8 @@ vpath %.c $(LIBCDIR)/mips/sys $(LIBCDIR)/gen $(LIBCDIR)/stdio \
           $(LIBCDIR)/stdlib $(LIBCDIR)/string $(LIBCDIR)/inet \
           $(LIBCDIR)/compat $(LIBCDIR)/runtime
 
-CFLAGS		= -Os -B$(TOPSRC)/lib/ $(DEFS) -Wa,-x -Wall -Werror
-ASFLAGS		+= -B$(TOPSRC)/lib/ $(DEFS) -Wa,-x -I$(LIBCDIR)/mips/sys
+CFLAGS		= -Os -B$(TOPSRC)/lib/ -Wall -Werror
+ASFLAGS		= -B$(TOPSRC)/lib/ -I$(LIBCDIR)/mips/sys
 
 # modules which can not use SYSCALL and must be assembled from sources.  The
 # rest of the system calls are generated with printf(1) and do not have
@@ -43,104 +43,78 @@ SYSOBJS		= __sysctl.o accept.o access.o adjtime.o bind.o chdir.o \
 OBJS		= $(SYSOBJS) sbrk.o execl.o execle.o execv.o \
 		  _exit.o _brk.o pipe.o ptrace.o sigaction.o
 
-#TODO - check if including extra files with the wildcard
-#match. May have to filter the results of some of the matches
-#see the filter files in myretrobsd/tmp
-
 # libc/mips/string
 ASFLAGS         += -DLWHI=lwr -DLWLO=lwl -DSWHI=swr -DSWLO=swl
-#OBJS            += bcopy.o bzero.o ffs.o memcpy.o memmove.o memset.o \
-                   strlen.o bcmp.o index.o rindex.o strcmp.o
 
-MIPS_STRING_ASR = $(wildcard $(LIBCDIR)/mips/string/*.S)
-#MIPS_STRING_CSR = $(wildcard $(LIBCDIR)/mips/string/*.c)
-#MIPS_STRING_SRCS = $(MIPS_STR_ASR) $(MIPS_STRING_CSR)
+#TODO - have to get rid of the path part of the match
+MIPS_STRING_ASR   = $(wildcard $(LIBCDIR)/mips/string/*.S)
 MIPS_STRING_OBJS  = $(patsubst %.S,%.o,$(MIPS_STRING_ASR))
-#MIPS_STRING_OBJS += $(patsubst %.c,%.o,$(MIPS_STRING_CSR))
 
+OBJS		+= $(MIPS_STRING_OBJS)
 
 # libc/mips/gen
-MIPS_GEN_OBJS            = _setjmp.o htonl.o htons.o
+MIPS_GEN_OBJS	= _setjmp.o htonl.o htons.o
+
+OBJS		+= $(MIPS_GEN_OBJS)
 
 # libc/gen
-#OBJS            += abort.o alarm.o atof.o atoi.o atol.o calloc.o closedir.o crypt.o \
-                   ctime.o ctype_.o daemon.o devname.o ecvt.o err.o \
-                   execvp.o fakcu.o frexp.o fstab.o gcvt.o getenv.o getgrent.o \
-                   getgrgid.o getgrnam.o getlogin.o \
-                   getgrouplist.o gethostname.o getpagesize.o \
-                   getpass.o getpwent.o getloadavg.o getmntinfo.o \
-                   getttyent.o getttynam.o getusershell.o getwd.o \
-                   initgroups.o isatty.o isinff.o isnanf.o ldexp.o malloc.o mktemp.o \
-                   modff.o ndbm.o nlist.o knlist.o opendir.o perror.o popen.o \
-                   psignal.o qsort.o random.o readdir.o regex.o scandir.o \
-                   seekdir.o setmode.o sethostname.o setenv.o siglist.o \
-                   signal.o siginterrupt.o sigsetops.o \
-                   sleep.o strcasecmp.o strftime.o swab.o sysctl.o syslog.o system.o \
-                   strcat.o strncat.o strcpy.o strncpy.o strncmp.o \
-                   telldir.o time.o timezone.o ttyname.o ttyslot.o ualarm.o usleep.o \
-                   strdup.o uname.o wait.o wait3.o waitpid.o
+GEN_EXCLD_SRCS	= $(LIBCDIR)/gen/abs.c $(LIBCDIR)/gen/bcmp-disabled.c $(LIBCDIR)/gen/bcopy-disabled.c \
+		  $(LIBCDIR)/gen/bzero-disabled.c $(LIBCDIR)/gen/fabs.c $(LIBCDIR)/gen/ffs-disabled.c \
+		  $(LIBCDIR)/gen/index-disabled.c $(LIBCDIR)/gen/insque.c $(LIBCDIR)/gen/isinf.c \
+		  $(LIBCDIR)/gen/isnan.c $(LIBCDIR)/gen/modf.c $(LIBCDIR)/gen/remque.c \
+		  $(LIBCDIR)/gen/rindex-disabled.c $(LIBCDIR)/gen/strcmp-disabled.c \
+		  $(LIBCDIR)/gen/strlen-disabled.c $(LIBCDIR)/gen/valloc.c
 
-LIBC_GEN_CSR = $(wildcard $(LIBCDIR)/gen/*.c)
-LIBC_GEN_OBJS = $(patsubst %.c,%.o,$(LIBC_GEN_CSR))
-G_EXCLUDED_SRCS = abs.c bcmp-disabled.c bcopy-disabled.c bzero-disabled.c fabs.c \
-	   ffs-disabled.c index-disabled.c insque.c isinf.c isnan.c modf.c \
-	   remque.c rindex-disabled.c strcmp-disabled.c strlen-disabled.c \
-	   valloc.c
+GEN_SRCS = $(wildcard $(LIBCDIR)/gen/*.c)
+GEN_FILT_SRCS = $(filter-out $(GEN_EXCLD_SRCS),$(GEN_SRCS))
+
+GEN_OBJS = $(patsubst %.c,%.o,$(GEN_FILT_SRCS))
+
+OBJS	+= $(GEN_OBJS)
 
 # libc/stdio
-#OBJS            += fgetc.o fgets.o fputc.o fputs.o gets.o puts.o \
-                   clrerr.o doscan.o exit.o fdopen.o filbuf.o findiop.o \
-                   flsbuf.o fopen.o fprintf.o fread.o freopen.o fseek.o \
-                   ftell.o fwrite.o getchar.o getw.o printf.o putchar.o putw.o \
-                   rew.o scanf.o setbuf.o setbuffer.o setvbuf.o snprintf.o sprintf.o \
-                   strout.o ungetc.o vfprintf.o vprintf.o vsprintf.o doprnt.o \
-                   remove.o feof.o ferror.o fileno.o
+STDIO_EXCLD_SRCS = $(LIBCDIR)/stdio/clnup.c
 
-LIBC_STDIO_CSR = $(wildcard $(LIBCDIR)/stdio/*.c)
-LIBC_STDIO_OBJS = $(patsubst %.c,%.o,$(LIBC_STDIO_CSR))
-EXECLUDE = clnup.c
+STDIO_SRCS = $(wildcard $(LIBCDIR)/stdio/*.c)
+STDIO_FILT_SRCS = $(filter-out $(STDIO_EXCLD_SRCS),$(STDIO_SRCS))
+
+STDIO_OBJS = $(patsubst %.c,%.o,$(STDIO_FILT_SRCS))
+
+OBJS	+= $(STDIO_OBJS)
 
 # libc/stdlib
-#OBJS            += getopt.o getsubopt.o strtol.o strtoul.o strtod.o
+STDLIB_SRCS = $(wildcard $(LIBCDIR)/stdlib/*.c)
+STDLIB_OBJS = $(patsubst %.c,%.o,$(STDLIB_SRCS))
 
-LIBC_STDLIB_CSR = $(wildcard $(LIBCDIR)/stdlib/*.c)
-LIBC_STDLIB_OBJS = $(patsubst %.c,%o,$(LIBC_STDLIB_CSR))
+OBJS	+= $(STDLIB_OBJS)
 
 # libc/string
-#OBJS            += strcspn.o strpbrk.o strerror.o strsep.o strspn.o \
-                   strstr.o strtok.o strtok_r.o
+STR_SRCS = $(wildcard $(LIBCDIR)/string/*.c)
+STR_OBJS = $(patsubst %.c,%.o,$(STR_SRCS))
 
-LIBC_STR_CSR = $(wildcard $(LIBCDIR)/string/*.c)
-LIBC_STR_OBJS = $(patsubst %.c,%.o,$(LIBC_STR_CSR))
+OBJS 	+= $(STR_OBJS)
 
 # libc/inet
-#OBJS            += inet_addr.o inet_network.o inet_netof.o \
-                   inet_ntoa.o inet_lnaof.o inet_maddr.o
+INET_SRCS = $(wildcard $(LIBCDIR)/inet/*.c)
+INET_OBJS = $(patsubst %.c,%.o,$(INET_SRCS))
 
-LIBC_INET_CSR = $(wildcard $(LIBCDIR)/inet/*.c)
-LIBC_INET_OBJS = $(patsubst %.c,%.o,$(LIBCDIR))
+OBJS 	+= $(INET_OBJS)
 
 # libc/compat
-#OBJS            += creat.o ftime.o gethostid.o memccpy.o memchr.o \
-                   memcmp.o memcpy.o memset.o nice.o pause.o rand.o \
-                   sethostid.o setregid.o setreuid.o setrgid.o setruid.o \
-                   sigcompat.o strchr.o strrchr.o times.o tmpnam.o \
-                   utime.o
+COMPAT_SRCS = $(wildcard $(LIBCDIR)/compat/*.c)
+COMPAT_OBJS = $(patsubst %.c,%.o,$(COMPAT_SRCS))
 
-LIBC_COMPAT_CSR = $(wildcard $(LIBCDIR)/compat/*.c)
-LIBC_COMPAT_OBJS = $(patsubst %.c,%.o,$(LIBC_COMPAT_CSR))
-
+OBJS	+= $(COMPAT_OBJS)
 
 # libc/runtime
-#OBJS            += addsf3.o comparesf2.o divsf3.o fixsfsi.o floatsisf.o \
-                   mulsf3.o negsf2.o subsf3.o sc_case.o fixunssfsi.o \
-                   floatunsisf.o
-
 #one assmbler file - sc_case.S
-LIBC_RUNTIME_CSR = $(wildcard $(LIBCDIR)/runtime/*.c)
-LIBC_RUNTIME_OBJS = $(patsubst %.c,%.o,$(LIBC_RUNTIME_CSR)) sc_case.o
+RUNTIME_SRCS = $(wildcard $(LIBCDIR)/runtime/*.c)
+RUNTIME_OBJS = $(patsubst %.c,%.o,$(RUNTIME_SRCS)) $(LIBCDIR)/runtime/sc_case.o
 
+OBJS	+= $(RUNTIME_OBJS)
 
+#printvar: 
+#	@$(info $(STDLIB_OBJS))
 
 all:            ../libc.a
 
@@ -153,4 +127,4 @@ $(SYSOBJS):	$(LIBCDIR)/mips/sys/SYS.h
 		@printf '#include "SYS.h"\nSYS($*)\n' | $(AS) $(ASFLAGS) - -c -o $*.o
 
 clean:
-		(rm -f *~ *.o a.out *.a
+		rm -f *~ *.o a.out *.a
