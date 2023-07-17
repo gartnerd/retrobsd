@@ -18,7 +18,6 @@ EXCLUDED_SRCS	+= dev_nor_flash_4m.c
 FILTERED_SRCS 	:= $(filter-out $(EXCLUDED_SRCS),$(SRCS))
 OBJS		:= $(patsubst %.c,%.o,$(FILTERED_SRCS))
 
-CC          	?= gcc
 LDFLAGS 	:= -m32
 DEPDIR		:= .deps
 DEPFLAGS	= -MT $@ -MMD -MP -MF $(DEPDIR)/$*.d
@@ -90,7 +89,7 @@ clean:
 $(DEPDIR):
 		@mkdir -p $@
 
-#DG - the following is some magic for dependencies
+#DG - the following is setting up dependencies
 DEPFILES 	:= $(patsubst %.c,$(DEPDIR)/%.d,$(FILTERED_SRCS))
 
 #DG - this is a file target. Make tries to match the list of files represented

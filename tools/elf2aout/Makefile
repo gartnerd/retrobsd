@@ -8,7 +8,6 @@
 ##	use an environment variable to explicitly specify a system wide CC 
 ##	Ubuntu based systems seem to default to using cc which is a symbolic link to gcc
 ##
-## TODO - add clang-format 
 
 CFLAGS		= -g -O -Wall -m32
 LDFLAGS		= -m32
@@ -27,8 +26,9 @@ clean:
 		rm -f *~ *.o *.lst *.dis $(PROG) $(OBJS)
 
 $(PROG): 	$(OBJS)
-		$(CC) $(LDFLAGS) -o $@ $^
+		$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
 
+#DG - the following could be omitted. The implicit make rules would cover this.
 %.o: 		%.c
 		$(CC) $(CFLAGS) -c -o $@ $<
 

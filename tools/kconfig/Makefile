@@ -1,4 +1,3 @@
-CC		?= gcc
 CFLAGS		= -g -m32 -O -Wall -Werror
 LDFLAGS		= -m32
 YACC            = byacc -d
@@ -15,13 +14,13 @@ install:	$(PROG)
 		install -s $(PROG) $(BINDIR)
 
 $(PROG).0:      $(PROG).8
-		nroff -man $< > $@
+		groff -man $< > $@
 
 clean:
 		rm -rf *~ *.o *.lst *.dis $(PROG) $(PROG).0 y.tab.[ch] lang.c config.c
 
 $(PROG):	$(OBJS)
-		$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
+		$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
 
 main.o: 	main.c y.tab.h config.h
 mkioconf.o: 	mkioconf.c y.tab.h config.h

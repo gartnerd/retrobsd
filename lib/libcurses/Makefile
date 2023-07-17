@@ -1,16 +1,19 @@
 TOPSRC		= $(shell cd ../..; pwd)
+
 include $(TOPSRC)/target.mk
 
 vpath %.c $(TOPSRC)/src/libcurses
 
-CFLAGS		= -Os -B$(TOPSRC)/lib/ $(DEFS) -Wa,-x -Wall -Werror
+CFLAGS		= -Os -B$(TOPSRC)/lib/ $(DEFS) -Wall -Werror
 
-OBJS		= addch.o addstr.o box.o clear.o clrtobot.o clrtoeol.o cr_put.o \
-                  cr_tty.o curses.o delch.o deleteln.o delwin.o endwin.o erase.o \
-                  fullname.o getch.o getstr.o idlok.o id_subwins.o initscr.o insch.o \
-                  insertln.o longname.o move.o mvprintw.o mvscanw.o mvwin.o newwin.o \
-                  overlay.o overwrite.o printw.o putchar.o refresh.o scanw.o scroll.o \
-                  toucholap.o standout.o touchwin.o tstp.o unctrl.o
+EXCLD_SRCS	= test.c
+
+SRCS		= $(notdir $(wildcard $(TOPSRC)/src/libcurses/*.c))
+FILT_SRCS	= $(filter-out $(EXCLD_SRCS),$(SRCS))
+
+OBJS		= $(patsubst %.c,%.o,$(FILT_SRCS))
+
+.PHONY:		all clean
 
 all:            ../libcurses.a
 

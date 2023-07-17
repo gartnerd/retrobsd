@@ -1,4 +1,3 @@
-CC		?= gcc
 CFLAGS		= -g -O -Wall -m32
 LDFLAGS		= -m32
 DESTDIR		= /usr/local
@@ -10,8 +9,6 @@ PROG		= fsutil
 
 # Enable mount option.
 #ENABLE_FUSE    = 1
-
-# removed OS X related code
 
 # Fuse - userspace file system. See man 8 fuse for details
 # FUSE_PATH may get defined in another Makefile
@@ -31,9 +28,8 @@ clean:
 		rm -rf *~ *.o *.lst *.dis $(PROG)
 
 $(PROG):	$(OBJS)
-		$(CC) $(LDFLAGS) -o $@ $(OBJS)
+		$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-#some magic numbers in this target
 root.bin:       $(PROG)
 		./$(PROG) -n16384 -s2048 $@
 		./$(PROG) -v $@

@@ -1,4 +1,3 @@
-CC		?= gcc
 CFLAGS		= -g -m32 -O -Wall
 LDFLAGS		= -m32
 PREFIX		= /usr/local
@@ -16,4 +15,4 @@ clean:
 		rm -f *~ *.o *.lst *.dis $(PROG)
 
 $(PROG):	$(OBJS)
-		$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
+		$(CC) $(LDFLAGS) -o $@ $< $(LIBS)

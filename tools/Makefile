@@ -1,10 +1,14 @@
-SUBDIR		= elf2aout fsutil virtualmips mkrd kconfig icache
+#DG - not all subdirectories under "tools" are spec'd/used
 
-.PHONY:		all install
+SUBDIRS		= elf2aout fsutil virtualmips mkrd kconfig icache
 
-all install:	$(SUBDIR)
-		-for i in $(SUBDIR); do $(MAKE) -C $$i $(MFLAGS) BINDIR=$(BINDIR) $@; done
+.PHONY:		all install clean $(SUBDIRS)
+
+all install:	$(SUBDIRS)
+
+$(SUBDIRS):
+		$(MAKE) -C $@ $(MFLAGS) BINDIR=$(BINDIR)
 
 clean:
 		rm -f *~
-		-for i in $(SUBDIR); do $(MAKE) -C $$i $(MFLAGS) clean; done
+		-for i in $(SUBDIRS); do $(MAKE) -C $$i $(MFLAGS) clean; done

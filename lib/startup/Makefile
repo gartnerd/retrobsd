@@ -7,11 +7,23 @@
 #
 TOPSRC          = $(shell cd ../..; pwd)
 include $(TOPSRC)/target.mk
+
 vpath %.c $(TOPSRC)/src/startup-mips
 
-CFLAGS          = -Os -B$(TOPSRC)/lib/ -Wa,-x $(DEFS)
+#DG - according to the GNU assembler manual the flag
+#DG - combination -W,-x is not valid, or at least it doesn't
+#DG - specify a defined action
+#DG - 
+#DG - The parent Makefile defines a CFLAGS var
+#DG - but it appears to get overwritten by the one defined 
+#DG - in this file
+#CFLAGS          = -Os -B$(TOPSRC)/lib/ -Wa,-x $(DEFS)
+
+CFLAGS          = -Os -B$(TOPSRC)/lib/ $(DEFS)
 
 OBJS		= ../crt0.o
+
+.PHONY:		all clean
 
 all:		$(OBJS)
 
