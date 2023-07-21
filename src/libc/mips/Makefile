@@ -10,26 +10,27 @@ include $(TOPSRC)/target.mk
 
 ALL		= gen string sys
 
-mips.a:		${ALL}
+.PHONY:		$(ALL) tags clean depend
+
+mips.a:		$(ALL)
 		-mkdir tmp
-		for i in ${ALL}; do (cd tmp; $(AR) x ../$$i/$$i.a); done
+		for i in $(ALL); do (cd tmp; $(AR) x ../$$i/$$i.a); done
 		$(AR) cr mips.a `ls tmp/*.o | sort`
 		rm -rf tmp
 
-${ALL}:	FRC
-	cd $@; ${MAKE} ${MFLAGS} DEFS="${DEFS}"
+$(ALL):	
+	$(MAKE) -C $@ $(MFLAGS) DEFS="$(DEFS)"
 
-FRC:
 
 tags:
-		for i in ${ALL}; do \
-			(cd $$i; ${MAKE} ${MFLAGS} TAGSFILE=../${TAGSFILE} tags); \
+		for i in $(ALL); do \
+			(cd $$i; $(MAKE) $(MFLAGS) TAGSFILE=../$(TAGSFILE) tags); \
 		done
 
 clean:
-		for i in ${ALL}; do (cd $$i; ${MAKE} ${MFLAGS} clean); done
+		for i in $(ALL); do (cd $$i; $(MAKE) $(MFLAGS) clean); done
 		rm -rf *.a tmp *~
 
 depend:
-		for i in ${ALL}; do \
-			(cd $$i; ${MAKE} ${MFLAGS} DEFS="${DEFS}" depend); done
+		for i in $(ALL); do \
+			(cd $$i; $(MAKE) $(MFLAGS) DEFS="$(DEFS)" depend); done

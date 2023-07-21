@@ -6,12 +6,10 @@
 TOPSRC		= $(shell cd ../../..; pwd)
 include $(TOPSRC)/target.mk
 
-CFLAGS		+= ${DEFS} -Os
+CFLAGS		+= $(DEFS) -Os
 
-SRCS		= ${STDSRC} fgetc.c fgets.c fputc.c fputs.c gets.c puts.c \
+SRCS		= $(STDSRC) fgetc.c fgets.c fputc.c fputs.c gets.c puts.c \
                   feof.c ferror.c fileno.c
-OBJS		= ${STDOBJ} fgetc.o fgets.o fputc.o fputs.o gets.o puts.o \
-                  feof.o ferror.o fileno.o
 
 STDSRC		= clrerr.c doscan.c exit.c clnup.c fdopen.c filbuf.c findiop.c \
 		  flsbuf.c fopen.c fprintf.c fread.c freopen.c fseek.c \
@@ -19,31 +17,36 @@ STDSRC		= clrerr.c doscan.c exit.c clnup.c fdopen.c filbuf.c findiop.c \
 		  rew.c scanf.c setbuf.c setbuffer.c setvbuf.c snprintf.c sprintf.c \
 		  strout.c ungetc.c vfprintf.c vprintf.c vsprintf.c doprnt.c \
 		  remove.c
-STDOBJ		= clrerr.o doscan.o exit.o fdopen.o filbuf.o findiop.o \
-		  flsbuf.o fopen.o fprintf.o fread.o freopen.o fseek.o \
-		  ftell.o fwrite.o getchar.o getw.o printf.o putchar.o putw.o \
-		  rew.o scanf.o setbuf.o setbuffer.o setvbuf.o snprintf.o sprintf.o \
-		  strout.o ungetc.o vfprintf.o vprintf.o vsprintf.o doprnt.o \
-		  remove.o
 
 TAGSFILE	= tags
 
-stdio.a:	${OBJS}
+SRC		= $(wildcard *.c)
+
+#DG - eventhough clnup.c is listed in the source variables above
+#DG - it is not included in the obj variables for some reason
+OBJS		= $(filter-out clnup.o,$(patsubst %.c,%.o,$(SRC)))
+
+.PHONY:		clean tags depend
+
+#DG - the archiver generates the following error text
+#DG - ar: `u' modifier ignored since `D' is the default (see `U')
+#DG - this can be fixed by adding the "U" flag
+stdio.a:	$(OBJS)
 		@echo "building stdio.a"
-		@ar cru stdio.a ${OBJS}
+		@ar cruU stdio.a $(OBJS)
 
 tags:
 		cwd=`pwd`; \
-		for i in ${SRCS}; do \
-			ctags -a -f ${TAGSFILE} $$cwd/$$i; \
+		for i in $(SRCS); do \
+			ctags -a -f $(TAGSFILE) $$cwd/$$i; \
 		done
 
 clean:
 		rm -f stdio.a *.o *~ profiled/*.o tags Makefile.bak
 
 depend:
-		for i in ${SRCS}; do \
-		    cc -M ${CFLAGS} $$i | awk ' { if ($$1 != prev) \
+		for i in $(SRCS); do \
+		    cc -M $(CFLAGS) $$i | awk ' { if ($$1 != prev) \
 			{ if (rec != "") print rec; rec = $$0; prev = $$1; } \
 			else { if (length(rec $$2) > 78) { print rec; rec = $$0; } \
 			else rec = rec " " $$2 } } \

@@ -7,27 +7,33 @@ TOPSRC		= $(shell cd ../../..; pwd)
 include $(TOPSRC)/target.mk
 
 DEFS		=
-CFLAGS		+= ${DEFS} -Os
+CFLAGS		+= $(DEFS) -Os
 
-SRCS		= getopt.c getsubopt.c strtol.c strtoul.c strtod.c
-OBJS		= getopt.o getsubopt.o strtol.o strtoul.o strtod.o
+SRCS		= $(wildcard *.c)
+
+OBJS		= $(patsubst %.c,%.o,$(SRCS))
+
+.PHONY:		all clean depend tags
 
 all:		stdlib.a
 
-stdlib.a:	${OBJS}
+#DG - The archive program generates the following error
+#DG - ar: `u' modifier ignored since `D' is the default (see `U')
+#DG - setting the "U" flag should remove the error
+stdlib.a:	$(OBJS)
 		@echo "building stdlib"
-		@ar cru stdlib.a ${OBJS}
+		@ar cruU stdlib.a $(OBJS)
 
 clean:
 		rm -f *.o *~ profiled/*.o tags Makefile.bak stdlib.a stdlib_p.s
 
-depend:		${SRCS}
-		mkdep ${CFLAGS} ${SRCS}
+depend:		$(SRCS)
+		mkdep $(CFLAGS) $(SRCS)
 
 tags:
 		cwd=`pwd`; \
-		for i in ${SRCS}; do \
-			ctags -a -f ${TAGSFILE} $$cwd/$$i; \
+		for i in $(SRCS); do \
+			ctags -a -f $(TAGSFILE) $$cwd/$$i; \
 		done
 
 # DO NOT DELETE THIS LINE -- mkdep uses it.

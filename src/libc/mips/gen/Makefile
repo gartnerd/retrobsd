@@ -6,27 +6,30 @@
 TOPSRC		= $(shell cd ../../../..; pwd)
 include $(TOPSRC)/target.mk
 
-CFLAGS		+= ${DEFS}
+CFLAGS		+= $(DEFS)
 
-SRCS		= _setjmp.S htonl.S htons.S setjmp.S sigsetjmp.S
-OBJS		= _setjmp.o htonl.o htons.o setjmp.o sigsetjmp.o
+SRCS		= $(wildcard *.S)
 
-gen.a:		${OBJS}
+OBJS		= $(patsubst %.S,%.o,$(SRCS))
+
+.PHONY:		tags clean depend
+
+gen.a:		$(OBJS)
 		@echo "buiding gen.a"
-		@$(AR) cru gen.a ${OBJS}
+		@$(AR) cru gen.a $(OBJS)
 
 tags:
 		cwd=`pwd`; \
-		for i in ${SRCS}; do \
-			ctags -a -f ${TAGSFILE} $$cwd/$$i; \
+		for i in $(SRCS); do \
+			ctags -a -f $(TAGSFILE) $$cwd/$$i; \
 		done
 
 clean:
 		rm -f gen.a *.o *~ profiled/*.o tags Makefile.bak
 
 depend:
-		for i in ${SRCS}; do \
-		    cc -M ${CFLAGS} $$i | awk ' { if ($$1 != prev) \
+		for i in $(SRCS); do \
+		    cc -M $(CFLAGS) $$i | awk ' { if ($$1 != prev) \
 			{ if (rec != "") print rec; rec = $$0; prev = $$1; } \
 			else { if (length(rec $$2) > 78) { print rec; rec = $$0; } \
 			else rec = rec " " $$2 } } \

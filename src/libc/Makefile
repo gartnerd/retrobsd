@@ -27,33 +27,33 @@ TOPSRC		= $(shell cd ../..; pwd)
 include $(TOPSRC)/target.mk
 
 DEFS		= -Wall -Werror
-ALL		= gen stdio stdlib string inet compat ${MACHINE}
+SUBDIRS		= gen stdio stdlib string inet compat $(MACHINE)
+
+.PHONY:		all install clean $(SUBDIRS)
 
 all:            ../libc.a
 
-../libc.a:      ${ALL}
+../libc.a:      $(SUBDIRS)
 		rm -rf tmp
 		mkdir tmp
-		cd tmp; for i in ${ALL}; do $(AR) x ../$$i/$$i.a; done; \
+		cd tmp; for i in $(SUBDIRS); do $(AR) x ../$$i/$$i.a; done; \
 			$(AR) cr ../$@ *.o
 #			$(AR) cr ../$@ `sh ../../cmd/lorder.sh *.o | tsort`
 		rm -rf tmp
 
-${ALL}:		FRC
-		cd $@; ${MAKE} ${MFLAGS} DEFS="${DEFS}"
-
-FRC:
+$(SUBDIRS):	
+		$(MAKE) -C $@ $(MFLAGS) DEFS="$(DEFS)"
 
 install:	../libc.a
-		${INSTALLDIR} ${DESTDIR}/lib
-#		${INSTALL} ../libc.a ${DESTDIR}/lib/libc.a
-#		$(RANLIB) ${DESTDIR}/lib/libc.a
+		$(INSTALLDIR) $(DESTDIR)/lib
+#		$(INSTALL) ../libc.a $(DESTDIR)/lib/libc.a
+#		$(RANLIB) $(DESTDIR)/lib/libc.a
 
 clean:
-		for i in ${ALL}; \
-			do (cd $$i; ${MAKE} ${MFLAGS} clean); done
+		for i in $(SUBDIRS); \
+			do (cd $$i; $(MAKE) $(MFLAGS) clean); done
 		rm -rf tmp *.a *~
 
 depend:
-		for i in ${ALL}; \
-			do (cd $$i; ${MAKE} ${MFLAGS} DEFS="${DEFS}" depend); done
+		for i in $(SUBDIRS); \
+			do (cd $$i; $(MAKE) $(MFLAGS) DEFS="$(DEFS)" depend); done

@@ -6,29 +6,34 @@
 TOPSRC		= $(shell cd ../../..; pwd)
 include $(TOPSRC)/target.mk
 
-SRCS		= inet_addr.c inet_network.c inet_netof.c \
-		  inet_ntoa.c inet_lnaof.c inet_maddr.c
-OBJS		= inet_addr.o inet_network.o inet_netof.o \
-		  inet_ntoa.o inet_lnaof.o inet_maddr.o
+SRCS		= $(wildcard *.c)
 
-CFLAGS		+= ${DEFS} -Os
+OBJS		= $(patsubst %.c,%.o,$(SRCS))
 
-inet.a: ${OBJS}
+CFLAGS		+= $(DEFS) -Os
+
+.PHONY:		tags clean depend
+
+#DG - The archive generates the following error:
+#DG - ar: `u' modifier ignored since `D' is the default (see `U')
+#DG - according to the man page to override this default behaviour
+#DG - we can specify "U" and this should bring things back to what they were
+inet.a: 	$(OBJS)
 		@echo "building inet.a"
-		@ar cru inet.a ${OBJS}
+		@ar cruU inet.a $(OBJS)
 
 tags:
 		cwd=`pwd`; \
-		for i in ${SRCS}; do \
-			ctags -a -f ${TAGSFILE} $$cwd/$$i; \
+		for i in $(SRCS); do \
+			ctags -a -f $(TAGSFILE) $$cwd/$$i; \
 		done
 
 clean:
 		rm -f *.a *~ *.o profiled/*.o errs a.out core tags Makefile.bak
 
 depend:
-		for i in ${SRCS}; do \
-		    cc -M ${CFLAGS} $$i | awk ' { if ($$1 != prev) \
+		for i in $(SRCS); do \
+		    cc -M $(CFLAGS) $$i | awk ' { if ($$1 != prev) \
 			{ if (rec != "") print rec; rec = $$0; prev = $$1; } \
 			else { if (length(rec $$2) > 78) { print rec; rec = $$0; } \
 			else rec = rec " " $$2 } } \

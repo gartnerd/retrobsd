@@ -1,16 +1,16 @@
 TOPSRC		= $(shell cd ../../../..; pwd)
 include $(TOPSRC)/target.mk
 
-ASFLAGS		+= ${DEFS}
+ASFLAGS		+= $(DEFS)
 CFLAGS          += -Os
 
 # modules which can not use SYSCALL and must be assembled from sources.  The
 # rest of the system calls are generated with printf(1) and do not have
 # source files associated with them.
 
-COBJS		= sbrk.o execl.o execle.o execv.o
+COBJS		= $(patsubst %.c,%.o,$(wildcard *.c))
 
-ASMOBJS		= _exit.o _brk.o pipe.o ptrace.o sigaction.o
+ASMOBJS		= $(patsubst %.S,%.o,$(wildcard *.S))
 
 SYSOBJS		= __sysctl.o accept.o access.o adjtime.o bind.o chdir.o \
 		  chflags.o chmod.o chown.o chroot.o close.o connect.o dup.o \
@@ -35,17 +35,19 @@ SYSOBJS		= __sysctl.o accept.o access.o adjtime.o bind.o chdir.o \
                   ufetch.o ustore.o ucall.o umask.o vfork.o vhangup.o \
 		  rdglob.o wrglob.o msec.o kmemdev.o
 
-OBJS		= ${COBJS} ${ASMOBJS} ${SYSOBJS}
+OBJS		= $(COBJS) $(ASMOBJS) $(SYSOBJS)
 
 TAGSFILE	= tags
 
-sys.a:		${OBJS}
-		@echo "building sys.a"
-		@$(AR) cru sys.a ${OBJS}
+.PHONY:		clean
 
-${SYSOBJS}:	SYS.h
+sys.a:		$(OBJS)
+		@echo "building sys.a"
+		@$(AR) cru sys.a $(OBJS)
+
+$(SYSOBJS):	SYS.h
 		@echo creating $*.o
-		@printf '#include "SYS.h"\nSYS($*)\n' | $(AS) ${ASFLAGS} - -c -o $*.o
+		@printf '#include "SYS.h"\nSYS($*)\n' | $(AS) $(ASFLAGS) - -c -o $*.o
 
 clean:
 		rm -f *~ *.o a.out sys.a

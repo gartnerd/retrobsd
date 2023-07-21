@@ -11,17 +11,21 @@ include $(TOPSRC)/target.mk
 SUBDIR		= startup-$(MACHINE) libc libm libutil libtermlib libcurses \
                   libvmf libwiznet libreadline libgpanel share cmd games man
 
+#DG - we need to do something special to mimic the original way this 
+#DG - makefile worked when called from its' parent with the install target
+#Get the goal specified on the command line.
+ifeq ($(filter install,$(MAKECMDGOALS)),install)
+    TARGET := all install
+endif
+
+.PHONY:		all clean install $(SUBDIR)
+
 all:		$(SUBDIR)
 
-$(SUBDIR):	FRC
-		$(MAKE) -C $@
+install:	elf32-mips.ld $(SUBDIR)
 
-FRC:
-
-install:        elf32-mips.ld
-		-for i in $(SUBDIR); do \
-			$(MAKE) -C $$i DESTDIR=$(DESTDIR) all install; done
-#		cp -p elf32-mips.ld $(DESTDIR)/lib/elf32-mips.ld
+$(SUBDIR):	
+		$(MAKE) -C $@ DESTDIR=$(DESTDIR) $(TARGET)
 
 clean:
 		rm -f a.out core *.s *.o *.a *~
