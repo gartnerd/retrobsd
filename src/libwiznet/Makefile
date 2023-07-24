@@ -3,12 +3,16 @@ include $(TOPSRC)/target.mk
 
 CFLAGS          += -O -Wall -Werror
 
-OBJS    	= w5100.o socket.o ethernet.o client.o server.o udp.o
+CSRCS		= $(wildcard *.c)
+
+OBJS		= $(patsubst %.c,%.o,$(CSRCS))
+
+.PHONY:		all install clean
 
 all:    	../libwiznet.a
 
-../libwiznet.a: ${OBJS}
-		@$(AR) cru $@ ${OBJS}
+../libwiznet.a: $(OBJS)
+		$(AR) cru $@ $(OBJS)
 		$(RANLIB) $@
 
 install: 	all

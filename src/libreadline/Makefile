@@ -5,10 +5,12 @@ CFLAGS          += -O -Wall -Werror
 
 OBJS		= readline.o
 
+.PHONY:		all install clean
+
 all:            ../libreadline.a
 
-../libreadline.a: ${OBJS}
-		@$(AR) cru $@ ${OBJS}
+../libreadline.a: $(OBJS)
+		$(AR) cru $@ $(OBJS)
 		$(RANLIB) $@
 
 install: 	all readline.h history.h

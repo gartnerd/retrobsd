@@ -17,15 +17,18 @@
 TOPSRC		= $(shell cd ../..; pwd)
 include $(TOPSRC)/target.mk
 
-CFLAGS          += ${DEFS}
+CFLAGS          += $(DEFS)
 
-SRCS            = login.c logout.c logwtmp.c
-OBJS            = login.o logout.o logwtmp.o
+SRCS		= $(wildcard *.c)
+
+OBJS		= $(patsubst %.c,%.o,$(SRCS))
+
+.PHONY:		all clean cleandir depend install tags
 
 all:            ../libutil.a
 
-../libutil.a:	${OBJS}
-		$(AR) cru $@ ${OBJS}
+../libutil.a:	$(OBJS)
+		$(AR) cru $@ $(OBJS)
 		$(RANLIB) $@
 
 clean:
@@ -35,13 +38,13 @@ cleandir:       clean
 		rm -f .depend
 
 depend:
-		mkdep ${CFLAGS} ${SRCS}
+		mkdep $(CFLAGS) $(SRCS)
 
 install:        all
-#		cp ../libutil.a ${DESTDIR}/lib/
-#		$(RANLIB) -t ${DESTDIR}/lib/libutil.a
-#		cp libutil_p.a ${DESTDIR}/lib/
-#		$(RANLIB) -t ${DESTDIR}/lib/libutil_p.a
+#		cp ../libutil.a $(DESTDIR)/lib/
+#		$(RANLIB) -t $(DESTDIR)/lib/libutil.a
+#		cp libutil_p.a $(DESTDIR)/lib/
+#		$(RANLIB) -t $(DESTDIR)/lib/libutil_p.a
 
 tags:
-		ctags ${SRCS}
+		ctags $(SRCS)

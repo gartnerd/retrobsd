@@ -5,17 +5,20 @@ CFLAGS          += -O -Wall -Werror
 MAN             = gpanel.0
 MANSRC          = gpanel.3
 
-OBJS    	= open.o clear.o pixel.o line.o rect.o fill.o fill_triangle.o \
-                  circle.o image.o char.o text.o text_width.o
+CSRCS		= $(wildcard *.c)
+
+OBJS		= $(patsubst %.c,%.o,$(CSRCS))
+
+.PHONY:		all install clean
 
 all:    	../libgpanel.a $(MAN)
 
-../libgpanel.a: ${OBJS}
-		@$(AR) cru $@ ${OBJS}
+../libgpanel.a: $(OBJS)
+		@$(AR) cru $@ $(OBJS)
 		$(RANLIB) $@
 
 $(MAN):         $(MANSRC)
-		${MANROFF} $< > $@
+		$(MANROFF) $< > $@
 
 install: 	all
 		cp $(MAN) $(DESTDIR)/share/man/cat3/
