@@ -6,19 +6,23 @@
 TOPSRC		= $(shell cd ../..; pwd)
 include $(TOPSRC)/target.mk
 
-SUBDIR		= misc zoneinfo
+SUBDIRS		= misc zoneinfo
 
-all:		${SUBDIR}
+.PHONY:		all install clean $(SUBDIRS)
 
-${SUBDIR}: 	FRC
-		cd $@; ${MAKE} ${MFLAGS}
+all install clean: $(SUBDIRS)
 
-FRC:
+#DG - the conditionals below must NOT be preceded by tabs because
+#DG - these are make commands. Almost all lines that start
+#DG - with a tab are interpeted by the shell and this case
+#DG - an error will be thrown. So ignore the red line if
+#DG - you're using vim with syntax highlighting
+$(SUBDIRS):	 
+                ifeq ($(strip $(filter all,$(MAKECMDGOALS))),all)
+			$(MAKE) $(MFLAGS) -C $@ 
+                else ifeq ($(filter install,$(MAKECMDGOALS)),install)
+			$(MAKE) $(MFLAGS) DESTDIR=$(DESTDIR) -C $@ install 
+                else ifeq ($(filter clean,$(MAKECMDGOALS)),clean)
+			$(MAKE) $(MFLAGS) -C $@ clean 
+                endif
 
-install: 	FRC
-		-for i in ${SUBDIR}; do \
-			(cd $$i; ${MAKE} ${MFLAGS} DESTDIR=${DESTDIR} install); done
-
-clean:
-		rm -f *~
-		for i in ${SUBDIR}; do (cd $$i; ${MAKE} ${MFLAGS} clean); done

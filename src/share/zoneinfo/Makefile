@@ -18,9 +18,9 @@ LOCALTIME=	US/Pacific
 # "#define NOSOLAR" from the include file usr/include/tzfile.h.
 # (and add solar87 to the DATA= line below).
 
-CFLAGS= -O
+CFLAGS= -O -g -Wall -Werror
 LINTFLAGS=	-phbaxc
-CC=		cc -g -Wall -Werror
+CC=		cc 
 
 TZCSRCS=	zic.c scheck.c ialloc.c
 TZCOBJS=	zic.o scheck.o ialloc.o
@@ -34,24 +34,26 @@ ZICMANSRC=	zic.8
 ZDUMAN=		zdump.0
 ZDUMANSRC=	zdump.8
 MAN=		$(ZICMAN) $(ZDUMAN)
-MANSRC=		$(ZICMANSRC) $(ZDUMAN)
-SHARDIR=	${DESTDIR}/share/zoneinfo
-MANDIR=		${DESTDIR}/man/cat8
+MANSRC=		$(ZICMANSRC) $(ZDUMANSRC)
+SHARDIR=	$(DESTDIR)/share/zoneinfo
+MANDIR=		$(DESTDIR)/man/cat8
 
-all:		tzfile.h zdump zic ${ZICMAN} ${ZDUMAN}
+.PHONY:		all install clean
+
+all:		tzfile.h zdump zic $(ZICMAN) $(ZDUMAN)
 
 install:	zic $(DATA) $(MAN)
-		(umask 22; ./zic -v -d ${SHARDIR} $(DATA))
-		install -c ${SHARDIR}/${LOCALTIME} ${DESTDIR}/etc/localtime
+		(umask 22; ./zic -v -d $(SHARDIR) $(DATA))
+		install -c $(SHARDIR)/$(LOCALTIME) $(DESTDIR)/etc/localtime
 #		install -c $(ZICMAN) ${MANDIR}/${ZICMAN}
 #		install -c $(ZDUMAN) ${MANDIR}/${ZDUMAN}
 #		install -c -s zic ${DESTDIR}/sbin/zic
 
-zdump.0:	$(ZDUMANSRC)
-		nroff -man $(ZDUMANSRC) > $(ZDUMAN)
+$(ZDUMAN):	$(ZDUMANSRC)
+		groff -man $(ZDUMANSRC) > $(ZDUMAN)
 
-zic.0:		$(ZICMANSRC)
-		nroff -man $(ZICMANSRC) > $(ZICMAN)
+$(ZICMAN):	$(ZICMANSRC)
+		groff -man $(ZICMANSRC) > $(ZICMAN)
 
 zdump:		$(TZDOBJS)
 		$(CC) $(CFLAGS) $(LFLAGS) $(TZDOBJS) -o $@
@@ -59,7 +61,7 @@ zdump:		$(TZDOBJS)
 zic:		$(TZCOBJS)
 		$(CC) $(CFLAGS) $(LFLAGS) $(TZCOBJS) -o $@
 
-tzfile.h:       ${DESTDIR}/include/tzfile.h
+tzfile.h:       $(DESTDIR)/include/tzfile.h
 		ln -s $< $@
 
 lint:		$(TZCSRCS) $(TZDSRCS)

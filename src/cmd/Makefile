@@ -8,21 +8,9 @@ include $(TOPSRC)/target.mk
 
 CFLAGS          += -Werror
 
-# Programs that live in subdirectories, and have makefiles of their own.
-# /bin
-SUBDIR		= adb adc-demo aout ar as awk basic calendar cc chflags \
-                  chpass cpp dc diff emg env fdisk find fold forth \
-                  fstat glcdtest hostname id la lcc lcpp ld ls login make \
-                  man md5 med more nm passwd pdc picoc portio printf pwm \
-                  ranlib re renice retroforth scm sed setty sh sl smallc \
-                  smlrc smux stty sysctl test uname wiznet xargs \
-                  zmodem gtest msec cron compress date2 tip \
-                  talloc uucp yacc
-
-# /sbin
-SUBDIR         += chown chroot disktool fsck getty init \
-                  mkfs mknod mkpasswd mount pstat \
-                  reboot shutdown umount update vipw virus
+SUBDIRS		= $(patsubst %/,%,$(wildcard */))
+EXCLDIRS	= devupdate ccom csh lccom lex m4 sre pforth tcl unixbench
+SUBDIR		= $(filter-out $(EXCLDIRS),$(SUBDIRS))
 
 # TODO: ccom lex m4 yacc reloc sre pforth
 
@@ -64,26 +52,26 @@ TTY		= wall write
 #
 BINS		= $(STD) $(NSTD) $(SETUID) $(OPERATOR) $(KMEM) $(TTY) $(SCRIPT) strip
 
+.PHONY:		all clean install depend $(SUBDIR)
+
 all:		$(SUBDIR) $(BINS)
 
-$(SUBDIR):	FRC
+$(SUBDIR):
 		$(MAKE) -C $@ $(MFLAGS)
-
-FRC:
 
 # $(STD) $(SETUID) $(KMEM) $(OPERATOR) $(TTY) strip
 %: %.c
 		$(CC) $(CFLAGS) $(LDFLAGS) -o $@.elf $< $(LIBS)
 		$(OBJDUMP) -S $@.elf > $@.dis
 		$(SIZE) $@.elf
-		$(ELF2AOUT) $@.elf $@ && /bin/rm $@.elf
+		$(ELF2AOUT) $@.elf $@ && rm $@.elf
 
 # Files listed in $(NSTD) have explicit make lines given below.
 
 # bc egrep expr
 %.c: %.y
 		$(YACC) $(YFLAGS) $<
-		-/bin/mv y.tab.c $@
+		-mv y.tab.c $@
 
 $(SCRIPT):
 		install -c $@.sh $@
