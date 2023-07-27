@@ -11,10 +11,10 @@ OBJS 		= compress.o
 CFLAGS          += -DUSERMEM=1024 -Wall -Werror
 
 compress: $(OBJS)
-	${CC} ${LDFLAGS} -o $@.elf ${OBJS} ${LIBS}
-	${OBJDUMP} -S $@.elf > $@.dis
-	${SIZE} $@.elf
-	${ELF2AOUT} $@.elf $@
+	$(CC) $(LDFLAGS) -o $@.elf $(OBJS) $(LIBS)
+	$(OBJDUMP) -S $@.elf > $@.dis
+	$(SIZE) $@.elf
+	$(ELF2AOUT) $@.elf $@
 
 # USERMEM may have to be set by hand.  It should contain the amount of
 # available user memory in bytes.  Set it to zero, for physical memory

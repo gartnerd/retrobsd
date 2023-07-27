@@ -12,13 +12,15 @@ CFLAGS          += -DVERSSTR=\"1.0\" \
                    -DCRT0FILE=\"/lib/crt0.o\" \
                    -DCRT0FILE_PROFILE=\"/lib/mcrt0.o\"
 
+.PHONY:		all clean install
+
 all:            cc
 
 cc:             $(OBJS)
-		${CC} ${LDFLAGS} -o cc.elf $(OBJS) ${LIBS}
-		${OBJDUMP} -S cc.elf > cc.dis
-		${SIZE} cc.elf
-		${ELF2AOUT} cc.elf $@ && rm cc.elf
+		$(CC) $(LDFLAGS) -o cc.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S cc.elf > cc.dis
+		$(SIZE) cc.elf
+		$(ELF2AOUT) cc.elf $@ && rm cc.elf
 
 clean:
 		rm -f *.o *.0 *.elf cc *.elf *.dis tags *~

@@ -8,13 +8,15 @@ include $(TOPSRC)/target.mk
 CFLAGS		+= -Werror -Wall -Os
 LDFLAGS         +=
 
+.PHONY:		all clean install
+
 all:            as
 
 as:             as.o
-		${CC} ${LDFLAGS} -o as.elf as.o ${LIBS}
-		${OBJDUMP} -S as.elf > as.dis
-		${SIZE} as.elf
-		${ELF2AOUT} as.elf $@ && rm as.elf
+		$(CC) $(LDFLAGS) -o as.elf as.o $(LIBS)
+		$(OBJDUMP) -S as.elf > as.dis
+		$(SIZE) as.elf
+		$(ELF2AOUT) as.elf $@ && rm as.elf
 
 clean:
 		rm -f *.o *.0 *.elf as tags *~ *.dis tests/*.dis tests/*.gcc-dis tests/*.o

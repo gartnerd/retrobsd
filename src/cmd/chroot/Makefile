@@ -22,32 +22,34 @@ OBJS            = chroot.o
 MAN             = chroot.0
 MANSRC          = chroot.8
 
-all:            chroot ${MAN}
+.PHONY:		all clean cleandir depend install lint tags
 
-chroot:         ${OBJS}
-		${CC} ${LDFLAGS} -o chroot.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S chroot.elf > chroot.dis
-		${SIZE} chroot.elf
-		${ELF2AOUT} chroot.elf $@ && rm chroot.elf
+all:            chroot $(MAN)
 
-chroot.0:       ${MANSRC}
-		${MANROFF} ${MANSRC} > ${MAN}
+chroot:         $(OBJS)
+		$(CC) $(LDFLAGS) -o chroot.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S chroot.elf > chroot.dis
+		$(SIZE) chroot.elf
+		$(ELF2AOUT) chroot.elf $@ && rm chroot.elf
+
+chroot.0:       $(MANSRC)
+		$(MANROFF) $(MANSRC) > $(MAN)
 
 clean:
-		rm -f ${OBJS} ${MAN} core chroot chroot.elf chroot.dis *~
+		rm -f $(OBJS) $(MAN) core chroot chroot.elf chroot.dis *~
 
 cleandir:       clean
 		rm -f tags .depend
 
-depend:         ${SRCS}
-		mkdep ${CFLAGS} ${SRCS}
+depend:         $(SRCS)
+		mkdep $(CFLAGS) $(SRCS)
 
 install:        all
-		install -m 4751 chroot ${DESTDIR}/sbin
-		cp ${MAN} ${DESTDIR}/share/man/cat8/
+		install -m 4751 chroot $(DESTDIR)/sbin
+		cp $(MAN) $(DESTDIR)/share/man/cat8/
 
-lint:           ${SRCS}
-		lint ${CFLAGS} ${SRCS}
+lint:           $(SRCS)
+		lint $(CFLAGS) $(SRCS)
 
-tags:           ${SRCS}
-		ctags ${SRCS}
+tags:           $(SRCS)
+		ctags $(SRCS)

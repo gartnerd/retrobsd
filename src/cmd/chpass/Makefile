@@ -24,38 +24,40 @@ OBJS		= chpass.o field.o util.o
 MAN		= chpass.0
 MANSRC		= chpass.1
 
+.PHONY:		all clean cleandir depend install lint tags
+
 all:            chpass chpass.0
 
-chpass:         ${OBJS}
-		${CC} ${LDFLAGS} -o chpass.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S chpass.elf > chpass.dis
-		${SIZE} chpass.elf
-		${ELF2AOUT} chpass.elf $@ && rm chpass.elf
+chpass:         $(OBJS)
+		$(CC) $(LDFLAGS) -o chpass.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S chpass.elf > chpass.dis
+		$(SIZE) chpass.elf
+		$(ELF2AOUT) chpass.elf $@ && rm chpass.elf
 
-chpass.0:       ${MANSRC}
-		${MANROFF} ${MANSRC} > ${MAN}
+chpass.0:       $(MANSRC)
+		$(MANROFF) $(MANSRC) > $(MAN)
 
 clean:
-		rm -f *.o *.elf ${MAN} chpass *.elf *.dis tags *~
+		rm -f *.o *.elf $(MAN) chpass *.elf *.dis tags *~
 
 cleandir: 	clean
 		rm -f tags .depend
 
-depend:         ${SRCS}
-		mkdep ${CFLAGS} ${SRCS}
+depend:         $(SRCS)
+		mkdep $(CFLAGS) $(SRCS)
 
 install: 	all
-		install -m 4755 chpass ${DESTDIR}/bin/chpass
-		rm -f ${DESTDIR}/bin/chfn; ln ${DESTDIR}/bin/chpass ${DESTDIR}/bin/chfn
-		rm -f ${DESTDIR}/bin/chsh; ln ${DESTDIR}/bin/chpass ${DESTDIR}/bin/chsh
-		cp ${MAN} ${DESTDIR}/share/man/cat1/
-		rm -f ${DESTDIR}/share/man/cat1/chfn.0
-		rm -f ${DESTDIR}/share/man/cat1/chsh.0
-		-ln ${DESTDIR}/share/man/cat1/chpass.0 ${DESTDIR}/share/man/cat1/chfn.0
-		-ln ${DESTDIR}/share/man/cat1/chpass.0 ${DESTDIR}/share/man/cat1/chsh.0
+		install -m 4755 chpass $(DESTDIR)/bin/chpass
+		rm -f $(DESTDIR)/bin/chfn; ln $(DESTDIR)/bin/chpass $(DESTDIR)/bin/chfn
+		rm -f $(DESTDIR)/bin/chsh; ln $(DESTDIR)/bin/chpass $(DESTDIR)/bin/chsh
+		cp $(MAN) $(DESTDIR)/share/man/cat1/
+		rm -f $(DESTDIR)/share/man/cat1/chfn.0
+		rm -f $(DESTDIR)/share/man/cat1/chsh.0
+		-ln $(DESTDIR)/share/man/cat1/chpass.0 $(DESTDIR)/share/man/cat1/chfn.0
+		-ln $(DESTDIR)/share/man/cat1/chpass.0 $(DESTDIR)/share/man/cat1/chsh.0
 
-lint:           ${SRCS}
-		lint ${CFLAGS} ${SRCS}
+lint:           $(SRCS)
+		lint $(CFLAGS) $(SRCS)
 
-tags:           ${SRCS}
-		ctags ${SRCS}
+tags:           $(SRCS)
+		ctags $(SRCS)

@@ -10,13 +10,15 @@ LDFLAGS         +=
 
 AOUTOBJS        = aout.o mips-dis.o
 
+.PHONY:		all clean install
+
 all:            aout
 
 aout:           $(AOUTOBJS)
-		${CC} ${LDFLAGS} -o aout.elf $(AOUTOBJS) ${LIBS}
-		${OBJDUMP} -S aout.elf > aout.dis
-		${SIZE} aout.elf
-		${ELF2AOUT} aout.elf $@ && rm aout.elf
+		$(CC) $(LDFLAGS) -o aout.elf $(AOUTOBJS) $(LIBS)
+		$(OBJDUMP) -S aout.elf > aout.dis
+		$(SIZE) aout.elf
+		$(ELF2AOUT) aout.elf $@ && rm aout.elf
 
 clean:
 		rm -f *.o *.0 *.elf aout tags *~ *.dis

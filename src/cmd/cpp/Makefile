@@ -13,16 +13,18 @@ CFLAGS		+= -Werror -Wall -Os
 #CFLAGS          += -DCPP_DEBUG -DGCC_COMPAT -DHAVE_CPP_VARARG_MACRO_GCC
 CFLAGS          += -DGCC_COMPAT -DHAVE_CPP_VARARG_MACRO_GCC
 
+.PHONY:		all clean install test
+
 all:            cpp $(MAN)
 
 cpp:            $(OBJS)
-		${CC} ${LDFLAGS} -o cpp.elf $(OBJS) ${LIBS}
-		${OBJDUMP} -S cpp.elf > cpp.dis
-		${SIZE} cpp.elf
-		${ELF2AOUT} cpp.elf $@ && rm cpp.elf
+		$(CC) $(LDFLAGS) -o cpp.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S cpp.elf > cpp.dis
+		$(SIZE) cpp.elf
+		$(ELF2AOUT) cpp.elf $@ && rm cpp.elf
 
-$(MAN):         ${MANSRC}
-		${MANROFF} $< > $@
+$(MAN):         $(MANSRC)
+		$(MANROFF) $< > $@
 
 clean:
 		rm -f *.o *.0 *.elf cpp *.dis tags *~ lex.yy.c y.tab.[ch] tests/run*

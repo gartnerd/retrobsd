@@ -10,11 +10,13 @@ FILES           = awk.lx.o b.o main.o tran.o lib.o run.o parse.o proctab.o freez
 SOURCE          = awk.def.h awk.g.y awk.lx.l b.c lib.c main.c parse.c \
                   proc.c freeze.c run.c tran.c
 
+.PHONY:		install profile clean lint
+
 awk:            $(FILES) awk.g.o
-		${CC} ${LDFLAGS} -o awk.elf $(FILES) awk.g.o ${LIBS}
-		${OBJDUMP} -S awk.elf > awk.dis
-		${SIZE} awk.elf
-		${ELF2AOUT} awk.elf $@ && rm awk.elf
+		$(CC) $(LDFLAGS) -o awk.elf $(FILES) awk.g.o $(LIBS)
+		$(OBJDUMP) -S awk.elf > awk.dis
+		$(SIZE) awk.elf
+		$(ELF2AOUT) awk.elf $@ && rm awk.elf
 
 y.tab.h:	awk.g.o
 
@@ -27,7 +29,7 @@ token.h:	awk.h tokenscript
 		ex - < tokenscript
 
 install:        awk
-		install awk ${DESTDIR}/bin/
+		install awk $(DESTDIR)/bin/
 
 profile:	awk.g.o $(FILES) mon.o
 		cc -p -i awk.g.o $(FILES) mon.o -lm
