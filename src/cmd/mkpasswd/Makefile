@@ -24,29 +24,31 @@ OBJS		= mkpasswd.o
 MAN		= mkpasswd.0
 MANSRC		= mkpasswd.8
 
-all:            mkpasswd ${MAN}
+.PHONY:		all clean depend install lint tags
 
-mkpasswd:    	${OBJS}
-		${CC} ${LDFLAGS} -o mkpasswd.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S mkpasswd.elf > mkpasswd.dis
-		${SIZE} mkpasswd.elf
-		${ELF2AOUT} mkpasswd.elf $@ && rm mkpasswd.elf
+all:            mkpasswd $(MAN)
 
-${MAN}:         ${MANSRC}
-		${MANROFF} ${MANSRC} > ${MAN}
+mkpasswd:    	$(OBJS)
+		$(CC) $(LDFLAGS) -o mkpasswd.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S mkpasswd.elf > mkpasswd.dis
+		$(SIZE) mkpasswd.elf
+		$(ELF2AOUT) mkpasswd.elf $@ && rm mkpasswd.elf
+
+$(MAN):         $(MANSRC)
+		$(MANROFF) $(MANSRC) > $(MAN)
 
 clean:
-		rm -f *.o *.elf ${MAN} mkpasswd *.elf *.dis tags *~
+		rm -f *.o *.elf $(MAN) mkpasswd *.elf *.dis tags *~
 
-depend:         ${SRCS}
-		mkdep -p ${CFLAGS} ${SRCS}
+depend:         $(SRCS)
+		mkdep -p $(CFLAGS) $(SRCS)
 
 install:        all
-		install mkpasswd ${DESTDIR}/sbin/mkpasswd
-		cp ${MAN} ${DESTDIR}/share/man/cat8/
+		install mkpasswd $(DESTDIR)/sbin/mkpasswd
+		cp $(MAN) $(DESTDIR)/share/man/cat8/
 
-lint:           ${SRCS}
-		lint ${CFLAGS} ${SRCS}
+lint:           $(SRCS)
+		lint $(CFLAGS) $(SRCS)
 
-tags:           ${SRCS}
-		ctags ${SRCS}
+tags:           $(SRCS)
+		ctags $(SRCS)

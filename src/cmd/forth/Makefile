@@ -7,13 +7,15 @@ LIBS            += -lm -lc
 
 OBJS            = forth.o func.o
 
+.PHONY:		all clean install
+
 all:            forth
 
-forth:          ${OBJS}
-		${CC} ${LDFLAGS} -o forth.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S forth.elf > forth.dis
-		${SIZE} forth.elf
-		${ELF2AOUT} forth.elf $@ && rm forth.elf
+forth:          $(OBJS)
+		$(CC) $(LDFLAGS) -o forth.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S forth.elf > forth.dis
+		$(SIZE) forth.elf
+		$(ELF2AOUT) forth.elf $@ && rm forth.elf
 
 clean:
 		rm -f *.o *.elf forth *.dis *~

@@ -11,16 +11,18 @@ include $(TOPSRC)/target.mk
 OBJS            = y1.o y2.o y3.o y4.o
 SRCS            = y1.c y2.c y3.c y4.c
 
+.PHONY:		all clean install
+
 all:            yacc
 
-yacc:       ${OBJS}
-		${CC} ${LDFLAGS} -o yacc.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S yacc.elf > yacc.dis
-		${SIZE} yacc.elf
-		${ELF2AOUT} yacc.elf $@
+yacc:       	$(OBJS)
+		$(CC) $(LDFLAGS) -o yacc.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S yacc.elf > yacc.dis
+		$(SIZE) yacc.elf
+		$(ELF2AOUT) yacc.elf $@
 
 clean:
-		-rm -f yacc ${OBJS} yacc.elf yacc.dis
+		-rm -f yacc $(OBJS) yacc.elf yacc.dis
 
 install:        all
 		install yacc $(DESTDIR)/bin/

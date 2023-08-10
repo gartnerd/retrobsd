@@ -10,27 +10,29 @@ BIN		= date
 SRCS            = $(BIN).c
 OBJS            = $(BIN).o
 
+.PHONY:		all clean depend install lint tags
+
 all:            $(BIN)
 
-$(BIN):    ${OBJS}
-		${CC} ${LDFLAGS} -o $@.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S $@.elf > $@.dis
-		${SIZE} $@.elf
-		${ELF2AOUT} $@.elf $@
+$(BIN):		$(OBJS)
+		$(CC) $(LDFLAGS) -o $@.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S $@.elf > $@.dis
+		$(SIZE) $@.elf
+		$(ELF2AOUT) $@.elf $@
 
 .SUFFIXES:      .0 .1
 
 clean:
-		rm -f *.o *.elf ${MAN} *.elf *.dis tags *~ $(BIN)
+		rm -f *.o *.elf $(MAN) *.elf *.dis tags *~ $(BIN)
 
-depend:         ${SRCS}
-		mkdep ${CFLAGS} ${SRCS}
+depend:         $(SRCS)
+		mkdep $(CFLAGS) $(SRCS)
 
 install:        all
-		install -m 755 $(BIN) ${DESTDIR}/bin
+		install -m 755 $(BIN) $(DESTDIR)/bin
 
-lint:           ${SRCS}
-		lint -hax ${SRCS}
+lint:           $(SRCS)
+		lint -hax $(SRCS)
 
-tags:           ${SRCS}
-		ctags ${SRCS}
+tags:           $(SRCS)
+		ctags $(SRCS)

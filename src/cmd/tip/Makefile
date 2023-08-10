@@ -12,10 +12,10 @@ include $(TOPSRC)/target.mk
 #
 # Files are:
 #	/etc/remote		remote host description file
-#	/etc/phones		phone number file, owned by ${OWNER} and
+#	/etc/phones		phone number file, owned by $(OWNER) and
 #				  mode 6??
-#	${ADM}/aculog		ACU accounting file, owned by ${OWNER} and
-#				  mode 6?? {if ACULOG defined}
+#	$(ADM)/aculog		ACU accounting file, owned by $(OWNER) and
+#				  mode 6?? (if ACULOG defined)
 # Presently supports:
 #	BIZCOMP
 #	DEC DF02-AC, DF03-AC
@@ -39,63 +39,63 @@ include $(TOPSRC)/target.mk
 #				writes on local side
 #	BUFSIZ			buffer sizing from stdio, must be fed
 #				explicitly to remcap.c if not 1024
-ADM     = var/log
-OWNER   = uucp
-GROUP   = daemon
-CONFIG  = -DHAYES
-LIBS    += -lacu -L./aculib
-CFLAGS  += -DDEFBR=1200 -DDEFFS=BUFSIZ -DACULOG -DPRISTINE -Wall -Werror
-SRCS    = acu.c acutab.c cmds.c cmdtab.c cu.c hunt.c log.c partab.c remcap.c \
-	  remote.c tip.c tipout.c uucplock.c value.c vars.c
-OBJS    = acu.o acutab.o cmds.o cmdtab.o cu.o hunt.o log.o partab.o remcap.o \
-	  remote.o tip.o tipout.o uucplock.o value.o vars.o
+ADM     	= var/log
+OWNER   	= uucp
+GROUP   	= daemon
+CONFIG  	= -DHAYES
+LIBS    	+= -lacu -L./aculib
+CFLAGS		+= -Wall -Werror
+CPPFLAGS	+= -DDEFBR=1200 -DDEFFS=BUFSIZ -DACULOG -DPRISTINE 
 
-all: aculib tip
+SRCS		= $(wildcard *.c)
+OBJS		= $(patsubst %.c,%.o,$(SRCS))
 
-tip:    ${OBJS}
-	${CC} ${LDFLAGS} -o tip.elf ${OBJS} ${LIBS}
-	${OBJDUMP} -S tip.elf > tip.dis
-	${SIZE} tip.elf
-	${ELF2AOUT} tip.elf $@
+.PHONY:		all aculib clean depend install lint tags
+
+all: 		aculib tip
+
+tip:    	$(OBJS)
+		$(CC) $(LDFLAGS) -o tip.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S tip.elf > tip.dis
+		$(SIZE) tip.elf
+		$(ELF2AOUT) tip.elf $@
 
 # acutab is configuration dependent, and so depends on the makefile
-acutab.o: Makefile
-acutab.o: acutab.c
-	${CC} -c ${CFLAGS} ${CONFIG} acutab.c
+acutab.o: 	Makefile
+acutab.o: 	acutab.c
+		$(CC) -c $(CPPFLAGS) $(CFLAGS) $(CONFIG) acutab.c
 
 # remote.o depends on the makefile because of DEFBR and DEFFS
 # log.o depends on the makefile because of ACULOG
 log.o remote.o: Makefile
 
-aculib: FRC
-	cd aculib; ${MAKE} ${MFLAGS}
+aculib: 
+		$(MAKE) $(MFLAGS) -C aculib
 
-clean: FRC
-	rm -f ${OBJS} core tip tip.elf tip.dis
-	cd aculib; ${MAKE} ${MFLAGS} clean
+clean: 
+		rm -f $(OBJS) core tip tip.elf tip.dis
+		$(MAKE) $(MFLAGS) -C aculib clean
 
-depend: FRC
-	mkdep ${CFLAGS} ${SRCS}
-	cd aculib; ${MAKE} ${MFLAGS} depend
+depend: 
+		mkdep $(CFLAGS) $(SRCS)
+		cd aculib; $(MAKE) $(MFLAGS) depend
 
-install: aculib tip
-	cd aculib; ${MAKE} ${MFLAGS} install
-	cp tip ${DESTDIR}/bin/tip
-	rm -f ${DESTDIR}/bin/cu
-	touch ${DESTDIR}/${ADM}/aculog
-	chmod 600 ${DESTDIR}/${ADM}/aculog
-	-mkdir -p ${DESTDIR}/var/lock
-	@echo "create /etc/remote and /etc/phones"
-	cp remote-file ${DESTDIR}/etc/remote
-	cp phones-file ${DESTDIR}/etc/phones
+install: 	aculib tip
+		cd aculib; $(MAKE) $(MFLAGS) install
+		cp tip $(DESTDIR)/bin/tip
+		rm -f $(DESTDIR)/bin/cu
+		touch $(DESTDIR)/$(ADM)/aculog
+		chmod 600 $(DESTDIR)/$(ADM)/aculog
+		-mkdir -p $(DESTDIR)/var/lock
+		@echo "create /etc/remote and /etc/phones"
+		cp remote-file $(DESTDIR)/etc/remote
+		cp phones-file $(DESTDIR)/etc/phones
 
-lint: FRC
-	lint ${CFLAGS} ${SRCS}
+lint:
+		lint $(CFLAGS) $(SRCS)
 
-tags: FRC
-	ctags ${SRCS}
-
-FRC:
+tags:
+		ctags $(SRCS)
 
 # DO NOT DELETE THIS LINE -- mkdep uses it.
 # DO NOT PUT ANYTHING AFTER THIS LINE, IT WILL GO AWAY.

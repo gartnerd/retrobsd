@@ -24,32 +24,34 @@ OBJS		= passwd.o
 MAN		= passwd.0
 MANSRC		= passwd.1
 
-all:            passwd ${MAN}
+.PHONY:		all clean cleandir depend install lint tags
 
-passwd:     	${OBJS}
-		${CC} ${LDFLAGS} -o passwd.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S passwd.elf > passwd.dis
-		${SIZE} passwd.elf
-		${ELF2AOUT} passwd.elf $@ && rm passwd.elf
+all:            passwd $(MAN)
 
-${MAN}:         ${MANSRC}
-		${MANROFF} ${MANSRC} > ${MAN}
+passwd:     	$(OBJS)
+		$(CC) $(LDFLAGS) -o passwd.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S passwd.elf > passwd.dis
+		$(SIZE) passwd.elf
+		$(ELF2AOUT) passwd.elf $@ && rm passwd.elf
+
+$(MAN):         $(MANSRC)
+		$(MANROFF) $(MANSRC) > $(MAN)
 
 clean:
-		rm -f *.o *.elf ${MAN} passwd *.elf *.dis tags *~
+		rm -f *.o *.elf $(MAN) passwd *.elf *.dis tags *~
 
 cleandir:       clean
 		rm -f tags .depend
 
-depend:         ${SRCS}
-		mkdep ${CFLAGS} ${SRCS}
+depend:         $(SRCS)
+		mkdep $(CFLAGS) $(SRCS)
 
-install:        ${MAN} passwd
-		install -m 4755 passwd ${DESTDIR}/bin/passwd
-		cp ${MAN} ${DESTDIR}/share/man/cat1/
+install:        $(MAN) passwd
+		install -m 4755 passwd $(DESTDIR)/bin/passwd
+		cp $(MAN) $(DESTDIR)/share/man/cat1/
 
-lint:           ${SRCS}
-		lint ${CFLAGS} ${SRCS}
+lint:           $(SRCS)
+		lint $(CFLAGS) $(SRCS)
 
-tags:           ${SRCS}
-		ctags ${SRCS}
+tags:           $(SRCS)
+		ctags $(SRCS)

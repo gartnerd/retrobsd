@@ -13,19 +13,21 @@ SRCS            = md5.c md5c.c
 MAN		= md5.0
 MANSRC		= md5.1
 
+.PHONY:		all clean install
+
 all:            md5 $(MAN)
 
-md5:             ${OBJS}
-		${CC} ${LDFLAGS} -o md5.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S md5.elf > md5.dis
-		${SIZE} md5.elf
-		${ELF2AOUT} md5.elf $@ && rm md5.elf
+md5:            $(OBJS)
+		$(CC) $(LDFLAGS) -o md5.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S md5.elf > md5.dis
+		$(SIZE) md5.elf
+		$(ELF2AOUT) md5.elf $@ && rm md5.elf
 
-$(MAN):         ${MANSRC}
-		${MANROFF} ${MANSRC} > ${MAN}
+$(MAN):         $(MANSRC)
+		$(MANROFF) $(MANSRC) > $(MAN)
 
 clean:
-		-rm -f md5 ${OBJS} ${MAN} md5.elf md5.dis
+		-rm -f md5 $(OBJS) $(MAN) md5.elf md5.dis
 
 install:        all
 		install md5 $(DESTDIR)/bin/

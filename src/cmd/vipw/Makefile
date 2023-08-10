@@ -24,32 +24,34 @@ OBJS		= vipw.o
 MAN		= vipw.0
 MANSRC		= vipw.8
 
-all:            vipw ${MAN}
+.PHONY:		all clean cleandir depend install lint tags
 
-vipw:        	${OBJS}
-		${CC} ${LDFLAGS} -o vipw.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S vipw.elf > vipw.dis
-		${SIZE} vipw.elf
-		${ELF2AOUT} vipw.elf $@ && rm vipw.elf
+all:            vipw $(MAN)
 
-${MAN}:         ${MANSRC}
-		${MANROFF} ${MANSRC} > ${MAN}
+vipw:        	$(OBJS)
+		$(CC) $(LDFLAGS) -o vipw.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S vipw.elf > vipw.dis
+		$(SIZE) vipw.elf
+		$(ELF2AOUT) vipw.elf $@ && rm vipw.elf
+
+$(MAN):         $(MANSRC)
+		$(MANROFF) $(MANSRC) > $(MAN)
 
 clean:
-		rm -f *.o *.elf ${MAN} vipw *.elf *.dis tags *~
+		rm -f *.o *.elf $(MAN) vipw *.elf *.dis tags *~
 
 cleandir:       clean
 		rm -f tags .depend
 
-depend:         ${SRCS}
-		mkdep ${CFLAGS} ${SRCS}
+depend:         $(SRCS)
+		mkdep $(CFLAGS) $(SRCS)
 
 install:        all
-		install vipw ${DESTDIR}/sbin/
-		cp ${MAN} ${DESTDIR}/share/man/cat8/
+		install vipw $(DESTDIR)/sbin/
+		cp $(MAN) $(DESTDIR)/share/man/cat8/
 
-lint:           ${SRCS}
-		lint ${CFLAGS} ${SRCS}
+lint:           $(SRCS)
+		lint $(CFLAGS) $(SRCS)
 
-tags:           ${SRCS}
-		ctags ${SRCS}
+tags:           $(SRCS)
+		ctags $(SRCS)

@@ -8,13 +8,15 @@ OBJS		= retro.o
 BIN             = retroforth
 LIBS            += -ltermcap
 
+.PHONY:		all clean install image
+
 all:            $(BIN)
 
-$(BIN):         ${SRCS}
-		${CC} ${LDFLAGS} -o $(BIN).elf $(SRCS) ${LIBS}
-		${SIZE} $(BIN).elf
-		${OBJDUMP} -S $(BIN).elf > $(BIN).dis
-		${ELF2AOUT} $(BIN).elf $@ && rm $(BIN).elf
+$(BIN):         $(SRCS)
+		$(CC) $(LDFLAGS) -o $(BIN).elf $(SRCS) $(LIBS)
+		$(SIZE) $(BIN).elf
+		$(OBJDUMP) -S $(BIN).elf > $(BIN).dis
+		$(ELF2AOUT) $(BIN).elf $@ && rm $(BIN).elf
 
 clean:
 		rm -f *.o *.elf $(BIN) *.elf *.dis *~

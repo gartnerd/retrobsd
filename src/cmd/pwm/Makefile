@@ -9,27 +9,29 @@ CFLAGS		+= -Wall -Werror -I../../../sys/include
 SRCS            = pwm.c
 OBJS            = pwm.o
 
+.PHONY:		all clean depend install lint tags
+
 all:            pwm
 
-pwm:    ${OBJS}
-		${CC} ${LDFLAGS} -o pwm.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S pwm.elf > pwm.dis
-		${SIZE} pwm.elf
-		${ELF2AOUT} pwm.elf $@
+pwm:    $(OBJS)
+		$(CC) $(LDFLAGS) -o pwm.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S pwm.elf > pwm.dis
+		$(SIZE) pwm.elf
+		$(ELF2AOUT) pwm.elf $@
 
 .SUFFIXES:      .0 .1
 
 clean:
 		rm -f *.o *.elf *.elf *.dis tags *~ pwm
 
-depend:         ${SRCS}
-		mkdep ${CFLAGS} ${SRCS}
+depend:         $(SRCS)
+		mkdep $(CFLAGS) $(SRCS)
 
 install:        all
-		install -m 755 pwm ${DESTDIR}/bin
+		install -m 755 pwm $(DESTDIR)/bin
 
-lint:           ${SRCS}
-		lint -hax ${SRCS}
+lint:           $(SRCS)
+		lint -hax $(SRCS)
 
-tags:           ${SRCS}
-		ctags ${SRCS}
+tags:           $(SRCS)
+		ctags $(SRCS)

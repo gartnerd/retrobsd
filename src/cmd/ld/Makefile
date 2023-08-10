@@ -13,20 +13,22 @@ OBJS            = ld.o
 MAN		= ld.0
 MANSRC		= ld.1
 
+.PHONY:		all clean install
+
 all:            ld $(MAN)
 
-ld:             ${OBJS}
-		${CC} ${LDFLAGS} -o ld.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S ld.elf > ld.dis
-		${SIZE} ld.elf
-		${ELF2AOUT} ld.elf $@ && rm ld.elf
+ld:             $(OBJS)
+		$(CC) $(LDFLAGS) -o ld.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S ld.elf > ld.dis
+		$(SIZE) ld.elf
+		$(ELF2AOUT) ld.elf $@ && rm ld.elf
 
 $(MAN):         $(MANSRC)
-		${MANROFF} $< > $@
+		$(MANROFF) $< > $@
 
 clean:
-		rm -f *.o *.0 *.elf ${MAN} ld *.elf *.dis a.out tags *~
+		rm -f *.o *.0 *.elf $(MAN) ld *.elf *.dis a.out tags *~
 
 install:        all
-		install ld ${DESTDIR}/bin/ld
-		cp ${MAN} ${DESTDIR}/share/man/cat1/
+		install ld $(DESTDIR)/bin/ld
+		cp $(MAN) $(DESTDIR)/share/man/cat1/

@@ -4,13 +4,16 @@
 TOPSRC		= $(shell cd ../../..; pwd)
 include $(TOPSRC)/target.mk
 
-CFLAGS		+= -Werror -DV7 -DMD=2 -DTXBSIZE=4096  -DNFGVMIN -DSEGMENTS=2
+CPPFLAGS	+= -DV7 -DMD=2 -DTXBSIZE=4096  -DNFGVMIN -DSEGMENTS=2
+CFLAGS		+= -Werror 
 #CFLAGS		+= -Werror -DV7 -DMD=2 -DTXBSIZE=1024  -DNFGVMIN -DSEGMENTS=8
 
 SRCS		= rz.c sz.c
 OBJS		= rz.o sz.o
-MAN		    = rz.0 sz.0
+MAN		= rz.0 sz.0
 MANSRC		= rz.1 sz.1
+
+.PHONY:		all clean install
 
 all:            rz sz $(MAN)
 

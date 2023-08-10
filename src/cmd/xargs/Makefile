@@ -11,29 +11,31 @@ OBJS		= xargs.o
 MAN		= xargs.0
 MANSRC		= xargs.1
 
-all:            xargs ${MAN}
+.PHONY:		all clean depend install lint tags
 
-xargs:          ${OBJS}
-		${CC} ${LDFLAGS} -o xargs.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S xargs.elf > xargs.dis
-		${SIZE} xargs.elf
-		${ELF2AOUT} xargs.elf $@ && rm xargs.elf
+all:            xargs $(MAN)
 
-${MAN}:        	${MANSRC}
-		${MANROFF} ${MANSRC} > ${MAN}
+xargs:          $(OBJS)
+		$(CC) $(LDFLAGS) -o xargs.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S xargs.elf > xargs.dis
+		$(SIZE) xargs.elf
+		$(ELF2AOUT) xargs.elf $@ && rm xargs.elf
+
+$(MAN):        	$(MANSRC)
+		$(MANROFF) $(MANSRC) > $(MAN)
 
 clean:
-		rm -f *.o *.elf ${MAN} xargs *.elf *.dis tags *~
+		rm -f *.o *.elf $(MAN) xargs *.elf *.dis tags *~
 
-depend:         ${SRCS}
-		mkdep ${CFLAGS} ${SRCS}
+depend:         $(SRCS)
+		mkdep $(CFLAGS) $(SRCS)
 
 install:        all
-		install xargs ${DESTDIR}/bin/
-		cp xargs.0 ${DESTDIR}/share/man/cat1/
+		install xargs $(DESTDIR)/bin/
+		cp xargs.0 $(DESTDIR)/share/man/cat1/
 
-lint:           ${SRCS}
-		lint -hax ${SRCS}
+lint:           $(SRCS)
+		lint -hax $(SRCS)
 
-tags:           ${SRCS}
-		ctags ${SRCS}
+tags:           $(SRCS)
+		ctags $(SRCS)

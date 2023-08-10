@@ -10,13 +10,15 @@ ARCH            = mips
 OBJS            = data.o error.o expr.o function.o gen.o initialise.o io.o lex.o main.o \
                   primary.o stmt.o sym.o while.o code$(ARCH).o #preproc.o
 
+.PHONY:		all install clean
+
 all:		smallc
 
 smallc: 	$(OBJS)
-		${CC} ${LDFLAGS} -o $@.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S $@.elf > $@.dis
-		${SIZE} $@.elf
-		${ELF2AOUT} $@.elf $@
+		$(CC) $(LDFLAGS) -o $@.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S $@.elf > $@.dis
+		$(SIZE) $@.elf
+		$(ELF2AOUT) $@.elf $@
 
 install:        smallc
 		cp smallc $(TOPSRC)/libexec/

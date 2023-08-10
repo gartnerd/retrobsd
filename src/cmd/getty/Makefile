@@ -10,19 +10,21 @@ CFLAGS		+= -Werror
 
 OBJS		= main.o init.o subr.o gettytab.o get_date.o
 
+.PHONY:		all clean install
+
 all:            getty
 
-getty:          ${OBJS}
-		${CC} ${LDFLAGS} -o getty.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S getty.elf > getty.dis
-		${SIZE} getty.elf
-		${ELF2AOUT} getty.elf $@ && rm getty.elf
+getty:          $(OBJS)
+		$(CC) $(LDFLAGS) -o getty.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S getty.elf > getty.dis
+		$(SIZE) getty.elf
+		$(ELF2AOUT) getty.elf $@ && rm getty.elf
 
 clean:
-		rm -f *.o *.elf ${MAN} getty *.elf *.dis tags *~
+		rm -f *.o *.elf $(MAN) getty *.elf *.dis tags *~
 
 install:        all
-		install getty ${DESTDIR}/libexec/getty
+		install getty $(DESTDIR)/libexec/getty
 
 main.o: gettytab.h
 init.o: gettytab.h

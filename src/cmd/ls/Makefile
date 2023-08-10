@@ -8,25 +8,27 @@ CFLAGS		= -O
 SRCS		= ls.c stat_flags.c
 OBJS		= ls.o stat_flags.o
 
+.PHONY:		all clean depend install lint tags
+
 all:		ls
 
-ls:		${OBJS}
-		${CC} ${LDFLAGS} -o ls.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S ls.elf > ls.dis
-		${SIZE} ls.elf
-		${ELF2AOUT} ls.elf $@ && rm ls.elf
+ls:		$(OBJS)
+		$(CC) $(LDFLAGS) -o ls.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S ls.elf > ls.dis
+		$(SIZE) ls.elf
+		$(ELF2AOUT) ls.elf $@ && rm ls.elf
 
 clean:
 		rm -f *.o *.elf *.dis ls tags *~
 
-depend:		${SRCS}
-		mkdep ${CFLAGS} ${SRCS}
+depend:		$(SRCS)
+		mkdep $(CFLAGS) $(SRCS)
 
 install:	all
-		install ls ${DESTDIR}/bin/ls
+		install ls $(DESTDIR)/bin/ls
 
-lint:		${SRCS}
-		lint -hax ${SRCS}
+lint:		$(SRCS)
+		lint -hax $(SRCS)
 
-tags:		${SRCS}
-		ctags ${SRCS}
+tags:		$(SRCS)
+		ctags $(SRCS)

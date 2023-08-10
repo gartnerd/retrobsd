@@ -30,4 +30,4 @@ Makefile.user
 #misc
 *.log
 *.txt
-
+*.d

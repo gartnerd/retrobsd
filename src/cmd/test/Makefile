@@ -15,22 +15,24 @@ OBJS            = test.o operators.o
 MAN             = test.0
 MANSRC          = test.1
 
+.PHONY:		all clean install
+
 all:            test $(MAN)
 
-test:        	${OBJS}
-		${CC} ${LDFLAGS} -o test.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S test.elf > test.dis
-		${SIZE} test.elf
-		${ELF2AOUT} test.elf $@ && rm test.elf
+test:        	$(OBJS)
+		$(CC) $(LDFLAGS) -o test.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S test.elf > test.dis
+		$(SIZE) test.elf
+		$(ELF2AOUT) test.elf $@ && rm test.elf
 
-$(MAN):         ${MANSRC}
-		${MANROFF} $< > $@
+$(MAN):         $(MANSRC)
+		$(MANROFF) $< > $@
 
 clean:
-		rm -f *.o *.elf ${MAN} test *.elf *.dis tags *~
+		rm -f *.o *.elf $(MAN) test *.elf *.dis tags *~
 
 install:        all
-		install test ${DESTDIR}/bin/
-		@rm -f ${DESTDIR}/bin/[
-		ln ${DESTDIR}/bin/test ${DESTDIR}/bin/[
-		cp $(MAN) ${DESTDIR}/share/man/cat1/
+		install test $(DESTDIR)/bin/
+		@rm -f $(DESTDIR)/bin/[
+		ln $(DESTDIR)/bin/test $(DESTDIR)/bin/[
+		cp $(MAN) $(DESTDIR)/share/man/cat1/

@@ -8,32 +8,34 @@ OBJS		= init.o
 MAN		= init.0
 MANSRC		= init.8
 
+.PHONY:		all clean depend install lint tags
+
 all:		init init.0
 
-init:		${OBJS}
-		${CC} ${LDFLAGS} -o init.elf ${OBJS} -lc
-		${OBJDUMP} -S init.elf > init.dis
-		${SIZE} init.elf
-		${ELF2AOUT} init.elf $@ && rm init.elf
+init:		$(OBJS)
+		$(CC) $(LDFLAGS) -o init.elf $(OBJS) -lc
+		$(OBJDUMP) -S init.elf > init.dis
+		$(SIZE) init.elf
+		$(ELF2AOUT) init.elf $@ && rm init.elf
 
-init.0:		${MANSRC}
-		${MANROFF} ${MANSRC} > ${MAN}
+init.0:		$(MANSRC)
+		$(MANROFF) $(MANSRC) > $(MAN)
 
 clean:
-		rm -f *.o *~ *.elf *.dis ${MAN} init tags
+		rm -f *.o *~ *.elf *.dis $(MAN) init tags
 
-depend:		${SRCS}
-		mkdep ${CFLAGS} ${SRCS}
+depend:		$(SRCS)
+		mkdep $(CFLAGS) $(SRCS)
 
 install:	all
-		cp ${MAN} ${DESTDIR}/share/man/cat8/
-		install -m 700 init ${DESTDIR}/sbin/init
+		cp $(MAN) $(DESTDIR)/share/man/cat8/
+		install -m 700 init $(DESTDIR)/sbin/init
 
-lint:		${SRCS}
-		lint -hax ${SRCS}
+lint:		$(SRCS)
+		lint -hax $(SRCS)
 
-tags:		${SRCS}
-		ctags ${SRCS}
+tags:		$(SRCS)
+		ctags $(SRCS)
 
 # DO NOT DELETE THIS LINE -- mkdep uses it.
 # DO NOT PUT ANYTHING AFTER THIS LINE, IT WILL GO AWAY.

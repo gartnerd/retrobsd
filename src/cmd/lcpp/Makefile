@@ -9,13 +9,15 @@ LDFLAGS         += -g
 
 CFLAGS		+= -Werror -Wall -Os
 
+.PHONY:		all clean install test
+
 all:            lcpp
 
 lcpp:           $(OBJS)
-		${CC} ${LDFLAGS} -o lcpp.elf $(OBJS) ${LIBS}
-		${OBJDUMP} -S lcpp.elf > lcpp.dis
-		${SIZE} lcpp.elf
-		${ELF2AOUT} lcpp.elf $@ && rm lcpp.elf
+		$(CC) $(LDFLAGS) -o lcpp.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S lcpp.elf > lcpp.dis
+		$(SIZE) lcpp.elf
+		$(ELF2AOUT) lcpp.elf $@ && rm lcpp.elf
 
 clean:
 		rm -rf *.o *.elf lcpp *.dis *~ tests

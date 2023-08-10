@@ -23,29 +23,31 @@ LIBS            := -lutil $(LIBS)
 SRCS		= login.c
 OBJS		= login.o
 
+.PHONY:		all clean cleandir depend install lint tags
+
 all:            login
 
-login:       	${OBJS}
-		${CC} ${LDFLAGS} -o login.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S login.elf > login.dis
-		${SIZE} login.elf
-		${ELF2AOUT} login.elf $@ && rm login.elf
+login:       	$(OBJS)
+		$(CC) $(LDFLAGS) -o login.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S login.elf > login.dis
+		$(SIZE) login.elf
+		$(ELF2AOUT) login.elf $@ && rm login.elf
 
 clean:
-		rm -f *.o *.elf ${MAN} login *.elf *.dis tags *~
+		rm -f *.o *.elf $(MAN) login *.elf *.dis tags *~
 
 
 cleandir:       clean
-		rm -f ${MAN} tags .depend
+		rm -f $(MAN) tags .depend
 
-depend:         ${SRCS}
-		mkdep ${CFLAGS} ${SRCS}
+depend:         $(SRCS)
+		mkdep $(CFLAGS) $(SRCS)
 
 install:        all
-		install -m 4755 login ${DESTDIR}/bin/login
+		install -m 4755 login $(DESTDIR)/bin/login
 
-lint:           ${SRCS}
-		lint ${CFLAGS} ${SRCS}
+lint:           $(SRCS)
+		lint $(CFLAGS) $(SRCS)
 
-tags:           ${SRCS}
-		ctags ${SRCS}
+tags:           $(SRCS)
+		ctags $(SRCS)

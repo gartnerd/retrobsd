@@ -10,25 +10,27 @@ BIN		= smux
 SRCS            = smux.c
 OBJS            = smux.o
 
+.PHONY:		all clean depend install lint tags
+
 all: smux
 
-smux: $(OBJS)
-			${CC} ${LDFLAGS} -o $@.elf ${OBJS} ${LIBS}
-			${OBJDUMP} -S $@.elf > $@.dis
-			${SIZE} $@.elf
-			${ELF2AOUT} $@.elf $@
+smux: 		$(OBJS)
+		$(CC) $(LDFLAGS) -o $@.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S $@.elf > $@.dis
+		$(SIZE) $@.elf
+		$(ELF2AOUT) $@.elf $@
 
 clean:
 		rm -f *.o *.elf *.elf *.dis tags *~ $(BIN)
 
-depend:         ${SRCS}
-		mkdep ${CFLAGS} ${SRCS}
+depend:         $(SRCS)
+		mkdep $(CFLAGS) $(SRCS)
 
 install:        all
-		install -m 755 $(BIN) ${DESTDIR}/bin
+		install -m 755 $(BIN) $(DESTDIR)/bin
 
-lint:           ${SRCS}
-		lint -hax ${SRCS}
+lint:           $(SRCS)
+		lint -hax $(SRCS)
 
-tags:           ${SRCS}
-		ctags ${SRCS}
+tags:           $(SRCS)
+		ctags $(SRCS)

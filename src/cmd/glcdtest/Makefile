@@ -9,27 +9,29 @@ CFLAGS		+= -Werror -I../../../sys/include
 SRCS            = glcdtest.c
 OBJS            = glcdtest.o
 
+.PHONY:		all clean depend install lint tags
+
 all:            glcdtest
 
-glcdtest:    ${OBJS}
-		${CC} ${LDFLAGS} -o glcdtest.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S glcdtest.elf > glcdtest.dis
-		${SIZE} glcdtest.elf
-		${ELF2AOUT} glcdtest.elf $@
+glcdtest:     	$(OBJS)
+		$(CC) $(LDFLAGS) -o glcdtest.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S glcdtest.elf > glcdtest.dis
+		$(SIZE) glcdtest.elf
+		$(ELF2AOUT) glcdtest.elf $@
 
 .SUFFIXES:      .0 .1
 
 clean:
 		rm -f *.o *.elf *.elf *.dis tags *~ glcdtest
 
-depend:         ${SRCS}
-		mkdep ${CFLAGS} ${SRCS}
+depend:         $(SRCS)
+		mkdep $(CFLAGS) $(SRCS)
 
 install:        all
-		install -m 755 glcdtest ${DESTDIR}/bin
+		install -m 755 glcdtest $(DESTDIR)/bin
 
-lint:           ${SRCS}
-		lint -hax ${SRCS}
+lint:           $(SRCS)
+		lint -hax $(SRCS)
 
-tags:           ${SRCS}
-		ctags ${SRCS}
+tags:           $(SRCS)
+		ctags $(SRCS)

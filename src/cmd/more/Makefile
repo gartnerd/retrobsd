@@ -11,18 +11,20 @@ CFLAGS		+= -Werror
 SRCS		= more.c
 OBJS		= more.o
 
+.PHONY:		all clean install
+
 all:            more
 
-more:        	${OBJS}
-		${CC} ${LDFLAGS} -o more.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S more.elf > more.dis
-		${SIZE} more.elf
-		${ELF2AOUT} more.elf $@ && rm more.elf
+more:        	$(OBJS)
+		$(CC) $(LDFLAGS) -o more.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S more.elf > more.dis
+		$(SIZE) more.elf
+		$(ELF2AOUT) more.elf $@ && rm more.elf
 
 clean:
-		rm -f *.o *.elf ${MAN} more *.elf *.dis tags *~
+		rm -f *.o *.elf $(MAN) more *.elf *.dis tags *~
 
 install:        all more.help
-		install more ${DESTDIR}/bin/more
-		@-rm -f ${DESTDIR}/share/misc/more.help
-		cp more.help ${DESTDIR}/share/misc/more.help
+		install more $(DESTDIR)/bin/more
+		@-rm -f $(DESTDIR)/share/misc/more.help
+		cp more.help $(DESTDIR)/share/misc/more.help

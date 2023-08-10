@@ -22,42 +22,42 @@ CFLAGS		+= -Werror
 SRCS		= man.c
 OBJS		= man.o
 
+.PHONY:		all clean depend install lint tags
+
 all:            man apropos
 
-man:            ${OBJS}
-		${CC} ${LDFLAGS} -o man.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S man.elf > man.dis
-		${SIZE} man.elf
-		${ELF2AOUT} man.elf $@ && rm man.elf
+man:            $(OBJS)
+		$(CC) $(LDFLAGS) -o man.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S man.elf > man.dis
+		$(SIZE) man.elf
+		$(ELF2AOUT) man.elf $@ && rm man.elf
 
-apropos:        ${OBJS}
-		${CC} ${LDFLAGS} -o apropos.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S apropos.elf > apropos.dis
-		${SIZE} apropos.elf
-		${ELF2AOUT} apropos.elf $@ && rm apropos.elf
+apropos:        $(OBJS)
+		$(CC) $(LDFLAGS) -o apropos.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S apropos.elf > apropos.dis
+		$(SIZE) apropos.elf
+		$(ELF2AOUT) apropos.elf $@ && rm apropos.elf
 
 clean:
-		rm -f *.o *.elf ${MAN} man apropos *.elf *.dis tags *~
+		rm -f *.o *.elf $(MAN) man apropos *.elf *.dis tags *~
 
-depend:         FRC
-		mkdep ${CFLAGS} ${ASRCS} ${MSRCS}
+depend:         
+		mkdep $(CFLAGS) $(ASRCS) $(MSRCS)
 
 install:        all
-		@rm -f ${DESTDIR}/bin/whatis ${DESTDIR}/bin/apropos
-		install apropos ${DESTDIR}/bin/apropos
-		install man ${DESTDIR}/bin/man
-		ln ${DESTDIR}/bin/apropos ${DESTDIR}/bin/whatis
+		@rm -f $(DESTDIR)/bin/whatis $(DESTDIR)/bin/apropos
+		install apropos $(DESTDIR)/bin/apropos
+		install man $(DESTDIR)/bin/man
+		ln $(DESTDIR)/bin/apropos $(DESTDIR)/bin/whatis
 
-lint:           FRC
-		lint ${CFLAGS} ${ASRCS}
-		lint ${CFLAGS} ${MSRCS}
+lint:           
+		lint $(CFLAGS) $(ASRCS)
+		lint $(CFLAGS) $(MSRCS)
 
-tags:           FRC
-		ctags ${ASRCS}
-		ctags ${MSRCS}
+tags:           
+		ctags $(ASRCS)
+		ctags $(MSRCS)
 		sort -o tags tags
-
-FRC:
 
 # DO NOT DELETE THIS LINE -- mkdep uses it.
 # DO NOT PUT ANYTHING AFTER THIS LINE, IT WILL GO AWAY.

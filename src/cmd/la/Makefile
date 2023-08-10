@@ -11,19 +11,21 @@ OBJS		= la.o
 MAN		= la.0
 MANSRC		= la.1
 
+.PHONY:		all clean install
+
 all:            la $(MAN)
 
-la:          	${OBJS}
-		${CC} ${LDFLAGS} -o la.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S la.elf > la.dis
-		${SIZE} la.elf
-		${ELF2AOUT} la.elf $@ && rm la.elf
+la:          	$(OBJS)
+		$(CC) $(LDFLAGS) -o la.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S la.elf > la.dis
+		$(SIZE) la.elf
+		$(ELF2AOUT) la.elf $@ && rm la.elf
 
-$(MAN):         ${MANSRC}
-		${MANROFF} ${MANSRC} > ${MAN}
+$(MAN):         $(MANSRC)
+		$(MANROFF) $(MANSRC) > $(MAN)
 
 clean:
-		rm -f *.o *.elf ${MAN} la *.elf *.dis tags *~
+		rm -f *.o *.elf $(MAN) la *.elf *.dis tags *~
 
 install:        all
 		install la $(DESTDIR)/bin/

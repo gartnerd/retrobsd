@@ -75,6 +75,8 @@ CRON_OBJ	=	cron.o database.o user.o entry.o job.o do_command.o \
 			misc.o env.o popen.o compat.o
 CRONTAB_OBJ	=	crontab.o misc.o entry.o env.o compat.o
 
+.PHONY:	all lint install clean
+
 all:	cron crontab
 
 lint:
@@ -84,16 +86,16 @@ lint:
 		|grep -v "constant argument to NOT" 2>&1
 
 cron:	$(CRON_OBJ)
-		${CC} ${LDFLAGS} -o $@.elf ${CRON_OBJ} ${LIBS}
-		${OBJDUMP} -S $@.elf > $@.dis
-		${SIZE} $@.elf
-		${ELF2AOUT} $@.elf $@
+		$(CC) $(LDFLAGS) -o $@.elf $(CRON_OBJ) $(LIBS)
+		$(OBJDUMP) -S $@.elf > $@.dis
+		$(SIZE) $@.elf
+		$(ELF2AOUT) $@.elf $@
 
 crontab:	$(CRONTAB_OBJ)
-		${CC} ${LDFLAGS} -o $@.elf ${CRONTAB_OBJ} ${LIBS}
-		${OBJDUMP} -S $@.elf > $@.dis
-		${SIZE} $@.elf
-		${ELF2AOUT} $@.elf $@
+		$(CC) $(LDFLAGS) -o $@.elf $(CRONTAB_OBJ) $(LIBS)
+		$(OBJDUMP) -S $@.elf > $@.dis
+		$(SIZE) $@.elf
+		$(ELF2AOUT) $@.elf $@
 
 install:	all
 	cp cron $(DESTSBIN)/

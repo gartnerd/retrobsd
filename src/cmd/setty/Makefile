@@ -12,16 +12,18 @@ OBJS            = setty.o
 SRCS            = setty.c
 LIBS            += -lcurses -ltermcap
 
+.PHONY:		all clean install
+
 all:            setty
 
-setty:          ${OBJS}
-		${CC} ${LDFLAGS} -o setty.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S setty.elf > setty.dis
-		${SIZE} setty.elf
-		${ELF2AOUT} setty.elf $@ && rm setty.elf
+setty:          $(OBJS)
+		$(CC) $(LDFLAGS) -o setty.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S setty.elf > setty.dis
+		$(SIZE) setty.elf
+		$(ELF2AOUT) setty.elf $@ && rm setty.elf
 
 clean:
-		-rm -f setty ${OBJS} setty.elf setty.dis
+		-rm -f setty $(OBJS) setty.elf setty.dis
 
 install:        all
 		install setty $(DESTDIR)/bin/

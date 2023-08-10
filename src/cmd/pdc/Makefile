@@ -8,16 +8,18 @@ OBJS            = pdc.o
 LDFLAGS         += -g
 
 CFLAGS		+= -Werror -Wall -Os
-CFLAGS          += -DGCC_COMPAT -DHAVE_CPP_VARARG_MACRO_GCC -DHAVE_READLINE
+CPPFLAGS        = -DGCC_COMPAT -DHAVE_CPP_VARARG_MACRO_GCC -DHAVE_READLINE
 LIBS            = -lreadline -lc
+
+.PHONY:		all clean install
 
 all:            pdc
 
 pdc:            $(OBJS)
-		${CC} ${LDFLAGS} -o pdc.elf $(OBJS) ${LIBS}
-		${OBJDUMP} -S pdc.elf > pdc.dis
-		${SIZE} pdc.elf
-		${ELF2AOUT} pdc.elf $@ && rm pdc.elf
+		$(CC) $(LDFLAGS) -o pdc.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S pdc.elf > pdc.dis
+		$(SIZE) pdc.elf
+		$(ELF2AOUT) pdc.elf $@ && rm pdc.elf
 
 clean:
 		rm -f *.o *.0 *.elf pdc *.dis tags *~ y.tab.[ch]

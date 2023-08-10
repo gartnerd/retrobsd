@@ -21,31 +21,31 @@ include $(TOPSRC)/target.mk
 #	VADIC 831 RS232 adaptor
 #	VADIC 3451
 CFLAGS  += -I.. -Wall -Werror 
-SRCS=	biz22.c biz31.c courier.c df.c dn11.c hayes.c ventel.c v831.c \
-	v3451.c penril.c
-OBJS=	biz22.o biz31.o courier.o df.o dn11.o hayes.o ventel.o v831.o \
-	v3451.o penril.o
+
+SRCS =  $(wildcard *.c)
+OBJS =  $(patsubst %.c,%.o,$(SRCS))
+
+.PHONY:	all clean depend lint tags install
 
 all: libacu.a
 
-libacu.a: ${OBJS}
-	$(AR) -rc libacu.a ${OBJS}
+libacu.a: $(OBJS)
+	$(AR) -rc libacu.a $(OBJS)
 	$(RANLIB) libacu.a
 
-clean: FRC
-	rm -f ${OBJS} core libacu.a
+clean: 
+	rm -f $(OBJS) core libacu.a
 
-depend: FRC
-	mkdep ${CFLAGS} ${SRCS}
+depend: 
+	mkdep $(CFLAGS) $(SRCS)
 
-lint: FRC
-	lint ${CFLAGS} ${SRCS}
+lint: 
+	lint $(CFLAGS) $(SRCS)
 
-tags: FRC
-	ctags ${SRCS}
+tags: 
+	ctags $(SRCS)
 
 install:
-FRC:
 
 # DO NOT DELETE THIS LINE -- mkdep uses it.
 # DO NOT PUT ANYTHING AFTER THIS LINE, IT WILL GO AWAY.

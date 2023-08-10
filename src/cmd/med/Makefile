@@ -12,16 +12,18 @@ OBJS            = med.o
 SRCS            = med.c
 LIBS            += -lcurses -ltermcap -lvmf -lc
 
+.PHONY:		all clean install
+
 all:            med
 
-med: 		${OBJS}
-		${CC} ${LDFLAGS} -o med.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S med.elf > med.dis
-		${SIZE} med.elf
-		${ELF2AOUT} med.elf $@ && rm med.elf
+med: 		$(OBJS)
+		$(CC) $(LDFLAGS) -o med.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S med.elf > med.dis
+		$(SIZE) med.elf
+		$(ELF2AOUT) med.elf $@ && rm med.elf
 
 clean:
-		-rm -f med ${OBJS} med.elf med.dis
+		-rm -f med $(OBJS) med.elf med.dis
 
 install:        all
 		install med $(DESTDIR)/bin/

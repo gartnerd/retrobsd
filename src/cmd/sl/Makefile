@@ -12,16 +12,18 @@ OBJS            = sl.o
 SRCS            = sl.c
 LIBS            += -lcurses -ltermcap -lc
 
+.PHONY:		all clean install
+
 all:            sl
 
-sl:             ${OBJS}
-		${CC} ${LDFLAGS} -o sl.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S sl.elf > sl.dis
-		${SIZE} sl.elf
-		${ELF2AOUT} sl.elf $@ && rm sl.elf
+sl:             $(OBJS)
+		$(CC) $(LDFLAGS) -o sl.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S sl.elf > sl.dis
+		$(SIZE) sl.elf
+		$(ELF2AOUT) sl.elf $@ && rm sl.elf
 
 clean:
-		-rm -f sl ${OBJS} sl.elf sl.dis
+		rm -f sl $(OBJS) sl.elf sl.dis
 
 install:        all
 		install sl $(DESTDIR)/bin/

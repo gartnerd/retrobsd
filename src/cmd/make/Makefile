@@ -9,13 +9,15 @@ LDFLAGS         += -g
 
 OBJS            = main.o doname.o misc.o files.o dosys.o gram.o
 
+.PHONY:		all clean install
+
 all:            xmake
 
-xmake:          ${OBJS}
-		${CC} ${LDFLAGS} -o make.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S make.elf > make.dis
-		${SIZE} make.elf
-		${ELF2AOUT} make.elf $@ && rm make.elf
+xmake:          $(OBJS)
+		$(CC) $(LDFLAGS) -o make.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S make.elf > make.dis
+		$(SIZE) make.elf
+		$(ELF2AOUT) make.elf $@ && rm make.elf
 
 clean:
 		rm -f *.o *.elf xmake *.elf *.dis tags *~ gram.c

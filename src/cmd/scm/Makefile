@@ -7,13 +7,15 @@ CFLAGS		+= -Os -Wall -Werror
 OBJS            = scm.o func.o
 TESTS           = tests/*.scm
 
-all:            scm ${MAN}
+.PHONY:		all clean install tests expected
 
-scm:            ${OBJS}
-		${CC} ${LDFLAGS} -o scm.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S scm.elf > scm.dis
-		${SIZE} scm.elf
-		${ELF2AOUT} scm.elf $@ && rm scm.elf
+all:            scm $(MAN)
+
+scm:            $(OBJS)
+		$(CC) $(LDFLAGS) -o scm.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S scm.elf > scm.dis
+		$(SIZE) scm.elf
+		$(ELF2AOUT) scm.elf $@ && rm scm.elf
 
 clean:
 		rm -f *.o scm *.elf *.dis *~ tests/*.out
@@ -21,13 +23,11 @@ clean:
 install:        all
 		install scm $(DESTDIR)/bin/
 
-tests:          scm $(TESTS) ALWAYS
+tests:          scm $(TESTS)
 		for i in $(TESTS); do \
                         base=`basename $$i .scm`;\
                         ./scm -v $$i > tests/$$base.out;\
                         diff tests/$$base.expected tests/$$base.out; done
-
-ALWAYS:
 
 expected:       scm $(TESTS)
 		for i in $(TESTS); do \

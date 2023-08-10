@@ -32,25 +32,27 @@ OBJS		+= dir.o inode.o pass1.o pass1b.o pass2.o \
 #
 HDRS		= fsck.h
 
-all:		${PROG}
+.PHONY:		all install clean lint depend
 
-${PROG}:	${OBJS} ${HDRS}
-		${CC} ${LDFLAGS} -o fsck.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S fsck.elf > fsck.dis
-		${SIZE} fsck.elf
-		${ELF2AOUT} fsck.elf $@ && rm fsck.elf
+all:		$(PROG)
+
+$(PROG):	$(OBJS) $(HDRS)
+		$(CC) $(LDFLAGS) -o fsck.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S fsck.elf > fsck.dis
+		$(SIZE) fsck.elf
+		$(ELF2AOUT) fsck.elf $@ && rm fsck.elf
 
 install:	all
-		install ${PROG} ${DESTDIR}/sbin/${PROG}
+		install $(PROG) $(DESTDIR)/sbin/$(PROG)
 
 clean:
-		rm -f *.o *~ *.elf *.dis a.out core ${PROG}
+		rm -f *.o *~ *.elf *.dis a.out core $(PROG)
 
 lint:
-		lint ${INCPATH} ${SRCS}
+		lint $(INCPATH) $(SRCS)
 
 depend:
-		cc -M ${INCPATH} ${SRCS} | \
+		cc -M $(INCPATH) $(SRCS) | \
 		awk ' { if ($$1 != prev) { print rec; rec = $$0; prev = $$1; } \
 			else { if (length(rec $$2) > 78) { print rec; rec = $$0; } \
 			       else rec = rec " " $$2 } } \

@@ -11,32 +11,34 @@ OBJS		= sysctl.o
 MAN             = sysctl.0
 MANSRC          = sysctl.8
 
+.PHONY:		all clean depend install lint tags
+
 all:            sysctl $(MAN)
 
-sysctl:      	${OBJS}
-		${CC} ${LDFLAGS} -o sysctl.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S sysctl.elf > sysctl.dis
-		${SIZE} sysctl.elf
-		${ELF2AOUT} sysctl.elf $@ && rm sysctl.elf
+sysctl:      	$(OBJS)
+		$(CC) $(LDFLAGS) -o sysctl.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S sysctl.elf > sysctl.dis
+		$(SIZE) sysctl.elf
+		$(ELF2AOUT) sysctl.elf $@ && rm sysctl.elf
 
-$(MAN):         ${MANSRC}
-		${MANROFF} $< > $@
+$(MAN):         $(MANSRC)
+		$(MANROFF) $< > $@
 
 clean:
-		rm -f *.o *.elf ${MAN} sysctl *.elf *.dis tags *~
+		rm -f *.o *.elf $(MAN) sysctl *.elf *.dis tags *~
 
-depend:         ${SRCS}
-		mkdep ${CFLAGS} ${SRCS}
+depend:         $(SRCS)
+		mkdep $(CFLAGS) $(SRCS)
 
 install:        all
-		install sysctl ${DESTDIR}/bin/sysctl
-		cp ${MAN} $(DESTDIR)/share/man/cat8/
+		install sysctl $(DESTDIR)/bin/sysctl
+		cp $(MAN) $(DESTDIR)/share/man/cat8/
 
-lint:           ${SRCS}
-		lint -hax ${SRCS}
+lint:           $(SRCS)
+		lint -hax $(SRCS)
 
-tags:           ${SRCS}
-		ctags ${SRCS}
+tags:           $(SRCS)
+		ctags $(SRCS)
 
 # DO NOT DELETE THIS LINE -- mkdep uses it.
 # DO NOT PUT ANYTHING AFTER THIS LINE, IT WILL GO AWAY.
