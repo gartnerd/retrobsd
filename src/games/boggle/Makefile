@@ -14,9 +14,11 @@ OBJS    	= boggle.o
 MAN             = boggle.0
 MANSRC          = boggle.6
 
-all:            boggle bogdict ${MAN}
+.PHONY:		all clean install
 
-boggle:         ${OBJS}
+all:            boggle bogdict $(MAN)
+
+boggle:         $(OBJS)
 		$(CC) $(LDFLAGS) -o $@.elf $(OBJS) $(LIBS)
 		$(OBJDUMP) -S $@.elf > $@.dis
 		$(SIZE) $@.elf
@@ -28,8 +30,8 @@ bogdict:        comp sfile
 comp:           comp.c
 		cc -O comp.c -o comp
 
-${MAN}:         ${MANSRC}
-		${MANROFF} $< > $@
+$(MAN):         $(MANSRC)
+		$(MANROFF) $< > $@
 
 clean:
 		rm -f *.o core boggle comp bogdict
@@ -37,4 +39,4 @@ clean:
 install:
 		install boggle $(DESTDIR)/games/
 		install -m 644 bogdict $(DESTDIR)/games/lib/bogdict
-		cp ${MAN} $(DESTDIR)/share/man/cat6/
+		cp $(MAN) $(DESTDIR)/share/man/cat6/

@@ -12,9 +12,8 @@
 TOPSRC		= $(shell cd ../../..; pwd)
 include $(TOPSRC)/target.mk
 
-CFLAGS		+= -mips16
-CFLAGS		+= -Os -DUNIX -DUNIX_BSD4_2 -DCURSES -DANSI -Werror -Wall
-
+CFLAGS		+= -Os -mips16 -Werror -Wall
+CPPFLAGS	+= -DUNIX -DUNIX_BSD4_2 -DCURSES -DANSI 
 OBJS            = curses.o	\
                   doprnt.o	\
                   hit.o		\
@@ -42,22 +41,24 @@ OBJS            = curses.o	\
 MAN		= rogue.0
 MANSRC		= rogue.6
 
+.PHONY:		all clean install
+
 all:            rogue $(MAN)
 
-rogue:          ${OBJS}
-		${CC} ${LDFLAGS} -o rogue.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S rogue.elf > rogue.dis
-		${SIZE} rogue.elf
-		${ELF2AOUT} rogue.elf $@ && rm rogue.elf
+rogue:          $(OBJS)
+		$(CC) $(LDFLAGS) -o rogue.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S rogue.elf > rogue.dis
+		$(SIZE) rogue.elf
+		$(ELF2AOUT) rogue.elf $@ && rm rogue.elf
 
-${MAN}:         ${MANSRC}
-		${MANROFF} $< > $@
+$(MAN):         $(MANSRC)
+		$(MANROFF) $< > $@
 
 clean:
-		rm -f *.o *.0 *.elf ${MAN} rogue *.elf *.dis tags *~
+		rm -f *.o *.0 *.elf $(MAN) rogue *.elf *.dis tags *~
 
 install:        all
 		install rogue $(DESTDIR)/games/
-		cp ${MAN} $(DESTDIR)/share/man/cat6/
+		cp $(MAN) $(DESTDIR)/share/man/cat6/
 
-#$(OBJS):        rogue.h
+$(OBJS):        rogue.h

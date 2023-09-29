@@ -12,6 +12,8 @@ LIBS		= -lm -lc
 OBJS            = pom.o
 MAN             = pom.0
 
+.PHONY:		all clean install
+
 all:            pom $(MAN)
 
 pom:           $(OBJS)

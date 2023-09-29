@@ -4,9 +4,14 @@ include $(TOPSRC)/target.mk
 
 CFLAGS		+= -Os -Wall -Werror
 
-OBJS            = done.o init.o io.o main.o save.o subr.o vocab.o wizard.o
+SRCS		= $(wildcard *.c)
+
+#OBJS            = done.o init.o io.o main.o save.o subr.o vocab.o wizard.o
+OBJS		= $(patsubst %.c,%.o,$(SRCS))
 MAN		= adventure.0
 MANSRC		= adventure.6
+
+.PHONY:		all clean install
 
 all:            adventure $(MAN) adventure.dat
 
@@ -15,21 +20,21 @@ all:            adventure $(MAN) adventure.dat
 adventure.dat:  #glorkz
 		./adventure glorkz
 
-adventure:      ${OBJS}
-		${CC} ${LDFLAGS} -o adventure.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S adventure.elf > adventure.dis
-		${SIZE} adventure.elf
-		${ELF2AOUT} adventure.elf $@ && rm adventure.elf
+adventure:      $(OBJS)
+		$(CC) $(LDFLAGS) -o adventure.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S adventure.elf > adventure.dis
+		$(SIZE) adventure.elf
+		$(ELF2AOUT) adventure.elf $@ && rm adventure.elf
 
-${MAN}:         ${MANSRC}
-		${MANROFF} $< > $@
+$(MAN):         $(MANSRC)
+		$(MANROFF) $< > $@
 
 clean:
-		rm -f *.o *.0 *.elf ${MAN} adventure *.elf *.dis tags *~
+		rm -f *.o *.0 *.elf $(MAN) adventure *.elf *.dis tags *~
 
 install:        all
 		install adventure $(DESTDIR)/games/
 		cp adventure.dat $(DESTDIR)/games/lib/
-		cp ${MAN} $(DESTDIR)/share/man/cat6/
+		cp $(MAN) $(DESTDIR)/share/man/cat6/
 
 $(OBJS):        hdr.h

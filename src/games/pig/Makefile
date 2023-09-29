@@ -12,9 +12,11 @@ LIBS		= -lm -lc
 OBJS            = pig.o
 MAN             = pig.0
 
+.PHONY:		all clean install
+
 all:            pig $(MAN)
 
-pig:           $(OBJS)
+pig:            $(OBJS)
 		$(CC) $(LDFLAGS) -o $@.elf $(OBJS) $(LIBS)
 		$(OBJDUMP) -S $@.elf > $@.dis
 		$(SIZE) $@.elf

@@ -10,13 +10,16 @@ include $(TOPSRC)/target.mk
 #include $(TOPSRC)/cross.mk
 #CFLAGS  	= -O -DCROSS -g -DFANCY
 
-CFLAGS  	+= -DMAX_PER_UID=5 -Werror -Wall
+CFLAGS  	+= -Werror -Wall
+CPPFLAGS	+= -DMAX_PER_UID=5 
 
 OBJS            = extern.o init_field.o main.o make_level.o move.o \
 		  move_robs.o play_level.o query.o rnd_pos.o score.o \
 		  flush_in.o
 MAN             = robots.0
 LIBS            = -lcurses -ltermcap -lc
+
+.PHONY:		all clean install
 
 all:            robots $(MAN)
 
@@ -25,6 +28,8 @@ robots:         $(OBJS)
 		$(OBJDUMP) -S $@.elf > $@.dis
 		$(SIZE) $@.elf
 		$(ELF2AOUT) $@.elf $@ && rm $@.elf
+
+$(OBJS):	robots.h
 
 $(MAN):         robots.6
 		nroff -man $< > $@
@@ -35,16 +40,4 @@ clean:
 install:        all
 		install robots $(DESTDIR)/games/
 		install -m 644 $(MAN) $(DESTDIR)/share/man/cat6/
-		install -c -m 644 /dev/null ${DESTDIR}/games/lib/robots_roll
-###
-extern.o: extern.c robots.h
-flush_in.o: flush_in.c
-init_field.o: init_field.c robots.h
-main.o: main.c robots.h
-make_level.o: make_level.c robots.h
-move.o: move.c robots.h
-move_robs.o: move_robs.c robots.h
-play_level.o: play_level.c robots.h
-query.o: query.c robots.h
-rnd_pos.o: rnd_pos.c robots.h
-score.o: score.c robots.h
+		install -c -m 644 /dev/null $(DESTDIR)/games/lib/robots_roll

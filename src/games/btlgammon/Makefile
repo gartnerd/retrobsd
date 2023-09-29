@@ -7,9 +7,11 @@ include $(TOPSRC)/target.mk
 CFLAGS  	= -O -Wall -Werror
 OBJS    	= btlgammon.o
 
+.PHONY:		all clean install
+
 all:            btlgammon
 
-btlgammon:      ${OBJS}
+btlgammon:      $(OBJS)
 		$(CC) $(LDFLAGS) -o $@.elf $(OBJS) $(LIBS)
 		$(OBJDUMP) -S $@.elf > $@.dis
 		$(SIZE) $@.elf

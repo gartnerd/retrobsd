@@ -9,6 +9,8 @@ OBJS            = fortune.o
 MAN		= fortune.0
 MANSRC		= fortune.6
 
+.PHONY:		all clean install
+
 all:            fortune $(MAN) fortunes.dat
 
 fortune:        $(OBJS)

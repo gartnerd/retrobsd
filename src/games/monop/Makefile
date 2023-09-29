@@ -16,6 +16,8 @@ OBJS            = monop.o cards.o execute.o getinp.o houses.o jail.o misc.o \
 MAN		= monop.0
 MANSRC		= monop.6
 
+.PHONY:		all clean install
+
 all:            monop $(MAN) cards.pck
 
 monop:          $(OBJS)

@@ -10,6 +10,8 @@ CFLAGS  	+= -Werror -Wall
 OBJS            = quiz.o
 MAN             = quiz.0
 
+.PHONY:		all clean install
+
 all:            quiz $(MAN)
 
 quiz:           $(OBJS)
@@ -27,4 +29,4 @@ clean:
 install:        all
 		install quiz $(DESTDIR)/games/
 		install -m 644 $(MAN) $(DESTDIR)/share/man/cat6/
-		cp -r quiz.k ${DESTDIR}/games/lib
+		cp -r quiz.k $(DESTDIR)/games/lib

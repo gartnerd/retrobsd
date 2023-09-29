@@ -12,9 +12,11 @@ LIBS		= -lm -lc
 OBJS            = caesar.o
 MAN             = caesar.0
 
+.PHONY:		all clean install
+
 all:            caesar $(MAN)
 
-caesar:           $(OBJS)
+caesar:         $(OBJS)
 		$(CC) $(LDFLAGS) -o $@.elf $(OBJS) $(LIBS)
 		$(OBJDUMP) -S $@.elf > $@.dis
 		$(SIZE) $@.elf

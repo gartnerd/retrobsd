@@ -9,6 +9,8 @@ OBJS            = endgame.o extern.o getguess.o getword.o main.o playgame.o \
 MAN             = hangman.0
 LIBS            = -lcurses -ltermcap -lc
 
+.PHONY:		all clean install
+
 all:            hangman $(MAN)
 
 hangman:       $(OBJS)

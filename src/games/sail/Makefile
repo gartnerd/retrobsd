@@ -16,20 +16,22 @@ LIBS            = -lcurses -ltermcap -lc
 MAN		= sail.0
 MANSRC		= sail.6
 
+.PHONY:		all clean install
+
 all:            sail $(MAN)
 
-sail:           ${OBJS}
-		${CC} ${LDFLAGS} -o sail.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S sail.elf > sail.dis
-		${SIZE} sail.elf
-		${ELF2AOUT} sail.elf $@ && rm sail.elf
+sail:           $(OBJS)
+		$(CC) $(LDFLAGS) -o sail.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S sail.elf > sail.dis
+		$(SIZE) sail.elf
+		$(ELF2AOUT) sail.elf $@ && rm sail.elf
 
-${MAN}:         ${MANSRC}
-		${MANROFF} $< > $@
+$(MAN):         $(MANSRC)
+		$(MANROFF) $< > $@
 
 clean:
-		rm -f *.o *.0 *.elf ${MAN} sail *.elf *.dis tags *~
+		rm -f *.o *.0 *.elf $(MAN) sail *.elf *.dis tags *~
 
 install:        all
 		install sail $(DESTDIR)/games/
-		cp ${MAN} $(DESTDIR)/share/man/cat6/
+		cp $(MAN) $(DESTDIR)/share/man/cat6/

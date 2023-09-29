@@ -13,6 +13,8 @@ OBJS            = comp.o end.o extern.o init.o mille.o misc.o move.o print.o \
 MAN             = mille.0
 LIBS            = -lcurses -ltermcap -lc
 
+.PHONY:		all clean install
+
 all:            mille $(MAN)
 
 mille:          $(OBJS)

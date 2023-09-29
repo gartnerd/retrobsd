@@ -10,7 +10,7 @@ include $(TOPSRC)/target.mk
 #include $(TOPSRC)/cross.mk
 
 CFLAGS          += -Os -g -Werror -Wall
-CFLAGS          += -DBSD -DDEST=\"/games/lib/atc/\"
+CPPFLAGS        += -DBSD -DDEST=\"/games/lib/atc/\"
 #CFLAGS          += -DSYSV -DDEST=\"games/\"
 YFLAGS          = -d
 LEX             = lex
@@ -20,6 +20,8 @@ OBJS            = extern.o grammar.o input.o lex.o list.o log.o main.o tunable.o
 MAN		= atc.0
 MANSRC		= atc.6
 
+.PHONY:		all clean install
+
 all:            atc $(MAN)
 
 atc:            $(OBJS)
@@ -28,14 +30,14 @@ atc:            $(OBJS)
 		$(SIZE) atc.elf
 		$(ELF2AOUT) atc.elf $@ && rm atc.elf
 
-${MAN}:         ${MANSRC}
-		${MANROFF} $< > $@
+$(MAN):         $(MANSRC)
+		$(MANROFF) $< > $@
 
 clean:
-		rm -f *.o *.0 *.elf atc ${MAN} *.elf *.dis tags *~ grammar.c lex.c y.tab.h
+		rm -f *.o *.0 *.elf atc $(MAN) *.elf *.dis tags *~ grammar.c lex.c y.tab.h
 
 install:        all
 		install atc $(DESTDIR)/games/
-		mkdir -p ${DESTDIR}/games/lib/atc
-		cp -p games/* ${DESTDIR}/games/lib/atc
-		cp ${MAN} $(DESTDIR)/share/man/cat6/
+		mkdir -p $(DESTDIR)/games/lib/atc
+		cp -p games/* $(DESTDIR)/games/lib/atc
+		cp $(MAN) $(DESTDIR)/share/man/cat6/

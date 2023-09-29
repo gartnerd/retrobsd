@@ -21,22 +21,24 @@ LIBS            = -lm -lc
 MAN		= trek.0
 MANSRC		= trek.6
 
+.PHONY:		all clean install
+
 all:            trek $(MAN)
 
-trek:           ${OBJS}
-		${CC} ${LDFLAGS} -o trek.elf ${OBJS} ${LIBS}
-		${OBJDUMP} -S trek.elf > trek.dis
-		${SIZE} trek.elf
-		${ELF2AOUT} trek.elf $@ && rm trek.elf
+trek:           $(OBJS)
+		$(CC) $(LDFLAGS) -o trek.elf $(OBJS) $(LIBS)
+		$(OBJDUMP) -S trek.elf > trek.dis
+		$(SIZE) trek.elf
+		$(ELF2AOUT) trek.elf $@ && rm trek.elf
 
-${MAN}:         ${MANSRC}
-		${MANROFF} $< > $@
+$(MAN):         $(MANSRC)
+		$(MANROFF) $< > $@
 
 clean:
-		rm -f *.o *.0 *.elf ${MAN} trek *.elf *.dis tags *~
+		rm -f *.o *.0 *.elf $(MAN) trek *.elf *.dis tags *~
 
 install:        all
 		install trek $(DESTDIR)/games/
-		cp ${MAN} $(DESTDIR)/share/man/cat6/
+		cp $(MAN) $(DESTDIR)/share/man/cat6/
 
-#$(OBJS):        trek.h
+$(OBJS):        trek.h

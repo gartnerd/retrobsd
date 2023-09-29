@@ -17,6 +17,8 @@ TOBJS           = allow.o board.o check.o data.o fancy.o init.o odds.o one.o \
 MAN		= backgammon.0
 MANSRC		= backgammon.6
 
+.PHONY:		all clean install
+
 all:            backgammon teachgammon $(MAN)
 
 backgammon:     $(OBJS)

@@ -25,12 +25,12 @@ STD             = banner aclock arithmetic bcd cfscores factor fish morse \
 #
 NSTD            = canfield primes rain worm worms
 
+.PHONY:		all $(SUBDIR) install clean
+
 all:            $(SUBDIR) $(STD) $(NSTD)
 
-$(SUBDIR):      FRC
+$(SUBDIR):      
 		$(MAKE) -C $@ $(MFLAGS)
-
-FRC:
 
 # $(STD)
 %: %.c
@@ -41,18 +41,18 @@ FRC:
 
 install:        $(STD) $(NSTD)
 		-for i in $(SUBDIR); do \
-			${MAKE} -C $$i $(MFLAGS) DESTDIR=$(DESTDIR) install; done
+			$(MAKE) -C $$i $(MFLAGS) DESTDIR=$(DESTDIR) install; done
 		-for i in $(STD) $(NSTD); do \
 			install $$i $(DESTDIR)/games/$$i; done
 		-for i in *.6; do \
-			${MANROFF} $$i > $(DESTDIR)/share/man/cat6/`basename $$i .6`.0; done
+			$(MANROFF) $$i > $(DESTDIR)/share/man/cat6/`basename $$i .6`.0; done
 		ln -f $(DESTDIR)/share/man/cat6/canfield.0 $(DESTDIR)/share/man/cat6/cfscores.0
 		cat < /dev/null > $(DESTDIR)/games/lib/cfscores
 		chmod 666 $(DESTDIR)/games/lib/cfscores
 
 clean:
 		rm -f a.out core *.s *.o *.dis *.elf $(STD) $(NSTD)
-		-for i in $(SUBDIR); do ${MAKE} -C $$i $(MFLAGS) clean; done
+		-for i in $(SUBDIR); do $(MAKE) -C $$i $(MFLAGS) clean; done
 
 # Files listed in $(NSTD) have explicit make lines given below.
 
