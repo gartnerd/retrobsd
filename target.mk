@@ -92,7 +92,7 @@ LEX             = flex
 INSTALL		= install -m 644
 INSTALLDIR	= install -m 755 -d
 TAGSFILE	= tags
-MANROFF		= groff -man -h -Tascii
+MANROFF		= nroff -man -h -Tascii
 ELF2AOUT	= $(TOPSRC)/tools/elf2aout/elf2aout
 
 CFLAGS		= -Os

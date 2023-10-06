@@ -23,14 +23,16 @@ DIRS=	man1 man2 man3 man4 man5 man6 man7 man8
 CDIRS=	cat1 cat2 cat3 cat4 cat5 cat6 cat7 cat8
 LCDIRS=	cat1 cat2 cat3 cat4 cat5 cat6 cat7 cat8
 
+.PHONY:	all clean install
+
 all:
-	for i in ${DIRS}; do \
-		${MAKE} -C $$i; \
+	for i in $(DIRS); do \
+		$(MAKE) -C $$i; \
 	done
 
 whatis.db:
 	cp /dev/null whatis_tmp
-	for dirext in ${DESTDIR}/share/man/cat* ; do \
+	for dirext in $(DESTDIR)/share/man/cat* ; do \
 	echo $$dirext; \
 	for file in `find $$dirext -type f -name '*.0' -print`; do \
 		sed -n -f makewhatis.sed $$file; \
@@ -39,23 +41,22 @@ whatis.db:
 	sort -u whatis_tmp > whatis.db
 	-rm -f whatis_tmp
 
-install: FRC
-	for i in ${DIRS}; do \
-		${MAKE} -C $$i install; \
+install:
+	for i in $(DIRS); do \
+		$(MAKE) -C $$i install; \
 	done
-	${MAKE} whatis.db
-	cp whatis.db ${DESTDIR}/share/man/whatis
-	cp man.template ${DESTDIR}/share/man/man.template
-#	cp makewhatis.sed ${DESTDIR}/share/man/makewhatis.sed
-#	install -c -m 755 manroff ${DESTDIR}/share/man/manroff
+	$(MAKE) whatis.db
+	cp whatis.db $(DESTDIR)/share/man/whatis
+	cp man.template $(DESTDIR)/share/man/man.template
+#	cp makewhatis.sed $(DESTDIR)/share/man/makewhatis.sed
+#	install -c -m 755 manroff $(DESTDIR)/share/man/manroff
 
-clean: FRC
-	for i in ${DIRS}; do \
-		${MAKE} -C $$i clean; \
+clean: 
+	for i in $(DIRS); do \
+		$(MAKE) -C $$i clean; \
 	done
 	rm -f whatis_tmp whatis.db
 
 depend:
 lint:
 tags:
-FRC:

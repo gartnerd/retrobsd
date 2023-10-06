@@ -20,51 +20,22 @@ TOPSRC = $(shell cd ../../..; pwd)
 include $(TOPSRC)/target.mk
 
 MDIR=	/share/man/cat8
-SRCS=	XNSrouted.8 adduser.8 autoconfig.8 \
-	bugfiler.8 crash.8 \
-	boot.8 \
-	drtest.8 dump.8 dumpdir.8 \
-	format.8 fsck.8 \
-	getty.8 htable.8 \
-	intro.8 lpc.8 lpd.8 makedev.8 \
-	makekey.8 \
-	named.8 pac.8 \
-	rc.8 rdump.8 \
-	routed.8 rrestore.8 \
-	sendmail.8 \
-	sticky.8 sync.8 \
-	timed.8 timedc.8 uucico.8 \
-	uuclean.8 uupoll.8 uusnap.8 uuxqt.8
-OBJS=	XNSrouted.0 adduser.0 autoconfig.0 \
-	bugfiler.0 crash.0 \
-	boot.0 \
-	drtest.0 dump.0 dumpdir.0 \
-	format.0 fsck.0 \
-	getty.0 htable.0 \
-	intro.0 lpc.0 lpd.0 makedev.0 \
-	makekey.0 \
-	named.0 pac.0 \
-	rc.0 rdump.0 \
-	routed.0 rrestore.0 \
-	sendmail.0 \
-	sticky.0 sync.0 \
-	timed.0 timedc.0 uucico.0 \
-	uuclean.0 uupoll.0 uusnap.0 uuxqt.0
+SRCS=	$(wildcard *.8)
+OBJS=	$(patsubst %.8,%.0,$(SRCS))
 
+.PHONY:	   all clean install
 .SUFFIXES: .8 .0
 
 .8.0:
-	${MANROFF} $*.8 > $*.0
+	$(MANROFF) $*.8 > $*.0
 
 all: _make_01
 
-_make_01: ${OBJS}
+_make_01: $(OBJS)
 
-clean: FRC
-	rm -f ${OBJS}
+clean:
+	rm -f $(OBJS)
 
 install: _make_01
-	cp ${OBJS} ${DESTDIR}${MDIR}
-	ln -f ${DESTDIR}${MDIR}/uucico.0 ${DESTDIR}${MDIR}/uucpd.0
-
-FRC:
+	cp $(OBJS) $(DESTDIR)$(MDIR)
+	ln -f $(DESTDIR)$(MDIR)/uucico.0 $(DESTDIR)$(MDIR)/uucpd.0

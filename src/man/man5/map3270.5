@@ -220,13 +220,16 @@ user's environment and in /usr/share/misc/map3270:
         insrt = '\E ';
         # program attention keys
         pa1 = '^p1'; pa2 = '^p2'; pa3 = '^p3';
+.\" DG - the original used escape sequences to show program function keys
+.\" 	 I changed it to use character sequences so that troff on GNU/Linux
+.\"	 doesn't complain about the formating
         # program function keys
-        pfk1 = '\E1'; pfk2 = '\E2'; pfk3 = '\E3'; pfk4 = '\E4';
-        pfk5 = '\E5'; pfk6 = '\E6'; pfk7 = '\E7'; pfk8 = '\E8';
-        pfk9 = '\E9'; pfk10 = '\E0'; pfk11 = '\E-'; pfk12 = '\E=';
-        pfk13 = '\E!'; pfk14 = '\E@'; pfk15 = '\E#'; pfk16 = '\E$';
-        pfk17 = '\E%'; pfk18 = '\E'; pfk19 = '\E&'; pfk20 = '\E*';
-        pfk21 = '\E('; pfk22 = '\E)'; pfk23 = '\E_'; pfk24 = '\E+';
+        pfk1 = '1'; pfk2 = '2'; pfk3 = '3'; pfk4 = '4';
+        pfk5 = '5'; pfk6 = '6'; pfk7 = '7'; pfk8 = '8';
+        pfk9 = '9'; pfk10 = '0'; pfk11 = '-'; pfk12 = '=';
+        pfk13 = '!'; pfk14 = '@'; pfk15 = '#'; pfk16 = '$';
+        pfk17 = '%'; pfk18 = ''; pfk19 = '&'; pfk20 = '*';
+        pfk21 = '('; pfk22 = ')'; pfk23 = '_'; pfk24 = '+';
         }
 .fi
 .SH "IBM 3270 KEY DEFINITONS FOR AN ABOVE DEFINITION"

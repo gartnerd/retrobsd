@@ -44,12 +44,12 @@ typical of a language entry.
 .PP
 .nf
 C|c:\
-	:pb=^\ed?*?\ed?\ep\ed?\(\ea?\):bb={:be=}:cb=/*:ce=*/:sb=":se=\ee":\e
-	:lb=':le=\ee':tl:\e
-	:kw=asm auto break case char continue default do double else enum\e
-	extern float for fortran goto if int long register return short\e
-	sizeof static struct switch typedef union unsigned while #define\e
-	#else #endif #if #ifdef #ifndef #include #undef # define else endif\e
+	:pb=^\\d?*?\\d?\\p\\d?(\\a?):bb={:be=}:cb=/*:ce=*/:sb=":se=\\e":
+	:lb=':le=\\e':tl:
+	:kw=asm auto break case char continue default do double else enum
+	extern float for fortran goto if int long register return short
+	sizeof static struct switch typedef union unsigned while #define
+	#else #endif #if #ifdef #ifndef #include #undef # define else endif
 	if ifdef ifndef include undef:
 .fi
 .PP

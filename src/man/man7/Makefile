@@ -26,19 +26,18 @@ OBJS=	ascii.0 environ.0 eqnchar.0 hier.0 hostname.0 intro.0 mailaddr.0 \
 	man.0 me.0 ms.0 term.0
 
 .SUFFIXES: .7 .0
+.PHONY:	   all clean install
 
 .7.0:
-	${MANROFF} $*.7 > $*.0
+	$(MANROFF) $*.7 > $*.0
 
 all: _make_01
 
-_make_01: ${OBJS}
+_make_01: $(OBJS)
 
-clean: FRC
-	rm -f ${OBJS}
+clean:
+	rm -f $(OBJS)
 
 install: _make_01
-	cp ${OBJS} ${DESTDIR}${MDIR}
-	ln -f ${DESTDIR}${MDIR}/intro.0 ${DESTDIR}${MDIR}/miscellaneous.0
-
-FRC:
+	cp $(OBJS) $(DESTDIR)$(MDIR)
+	ln -f $(DESTDIR)$(MDIR)/intro.0 $(DESTDIR)$(MDIR)/miscellaneous.0
