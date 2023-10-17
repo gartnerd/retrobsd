@@ -39,6 +39,58 @@ Under Ubuntu, for example, you can do it by command:
 $ sudo apt-get install bison byacc flex groff-base libelf-dev
 ```
 
+## - PRELIMINARY (some steps need verification) -
+
+You will need to setup multiarch support when building on 64bit systems because currently RetroBSD requires a 32bit build environment. You can run the following command on Debian based systems to see if any alternate architectures are setup:
+
+```shell
+$ dpkg --print-foreign-architectures
+```
+
+The output from the command will likely be an empty line unless you have already setup your system for developing with alternate architectures.
+
+Use the following command to make 32bit x86 repos available (I think that is what the command does. See the following references - [Debian Wiki](https://wiki.debian.org/Multiarch/HOWTO), [Ubuntu Doc](https://help.ubuntu.com/community/MultiArch) and [Ubuntu Spec](https://wiki.ubuntu.com/MultiarchSpec). Much of this information was cribbed from : [Linode Help](https://www.linode.com/community/questions/19916/how-do-i-enable-32-bit-support-on-my-64-bit-os))
+
+```shell
+$ sudo dpkg --add-architecture i386
+$ sudo apt-get update
+```
+
+Check if there are newer libraries of the packages you already have installed:
+
+```shell
+$ sudo apt-get dist-upgrade
+```
+
+Lastly install the requisite compilers and support libraries if not present:
+
+```shell
+$ sudo apt-get install build-essential binutils
+$ sudo apt-get install binutils-multiarch
+$ sudo apt-getinstall multiarch-support
+$ sudo apt-get install gcc-multilib g++-multilib
+```
+
+Finding the packages that contain the required libraries can be a challenge. The following can help when using Debian systems:
+
+* https://packages.debian.org/index
+
+Using this website indicates that 32bit versions of libelf are found in the following packages
+
+* libelf1
+* libelf-dev
+
+The 32bit version of these files can be installed using:
+
+```shell
+$sudo apt-get install libelf1:i386
+$sudo apt-get install libelf-dev:i386
+```
+
+Its likely that you will encounter build errors because of missing tools. The easiest way to rectify this is to search the output from the 'make' command for errors. A tool called 'remake' can help with this.
+
+## End of section
+
 You can change a desired filesystem size and swap area size, as required.
 Default is:
 ```Makefile
