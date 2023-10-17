@@ -40,6 +40,7 @@ $ sudo apt-get install bison byacc flex groff-base libelf-dev
 ```
 
 ## - PRELIMINARY (some steps need verification) -
+### Multiarch Setup
 
 You will need to setup multiarch support when building on 64bit systems because currently RetroBSD requires a 32bit build environment. You can run the following command on Debian based systems to see if any alternate architectures are setup:
 
@@ -67,15 +68,17 @@ Lastly install the requisite compilers and support libraries if not present:
 ```shell
 $ sudo apt-get install build-essential binutils
 $ sudo apt-get install binutils-multiarch
-$ sudo apt-getinstall multiarch-support
+$ sudo apt-get install multiarch-support
 $ sudo apt-get install gcc-multilib g++-multilib
 ```
+
+### Searching Package Contents (Debian)
 
 Finding the packages that contain the required libraries can be a challenge. The following can help when using Debian systems:
 
 * https://packages.debian.org/index
 
-Using this website indicates that 32bit versions of libelf are found in the following packages
+Using this website indicates that 32bit versions of libelf and libelf-dev (both required) are found in the following packages:
 
 * libelf1
 * libelf-dev
@@ -87,9 +90,24 @@ $sudo apt-get install libelf1:i386
 $sudo apt-get install libelf-dev:i386
 ```
 
-Its likely that you will encounter build errors because of missing tools. The easiest way to rectify this is to search the output from the 'make' command for errors. A tool called 'remake' can help with this.
+### Cross-compiler installation
 
-## End of section
+A cross-compiler toolchain is required to actually compile the RetroBSD kernel and utilities. The file 'target.mk' in the source root directory lists several possible toolchains. The [Sourcery CodeBench Lite toolchain](https://sourcery.mentor.com/GNUToolchain/release2641) is known to work. By default the Sourcery CodeBench Lite install script will try and launch a graphical installer. This may or may not work for you. Use the '-console' option to prevent the graphical installer from launching. The '-h' flag will provide other useful information when invoking the install script. 
+
+RetroBSD make files expect to find the Sourcery CodeBench Lite cross-compiler tool chain in one of the following directories:
+
+- /usr/local/mips-2013.11/
+or
+- /usr/local/mips-2014.05/
+
+depending on the toolchain version installed
+
+The Sourcery ColdeBench Lite install script can create the required directory if it is specified.
+
+### Note
+Its likely that you will encounter build errors because of missing tools (flex, awk, etc.) when compiling RetroBSD. The easiest way to rectify this is to search the output from the 'make' command for errors and install the missing tools. A tool called 'remake' can help with this.
+
+## End of modified section
 
 You can change a desired filesystem size and swap area size, as required.
 Default is:
