@@ -3,6 +3,9 @@
 #
 # DEBUG is set to -g by kconfig if debugging is requested (kconfig -g).
 #
+# DG - Do not edit by hand. Makefile created from template (Makefile.kconf)
+# DG - and modified by kconfig
+#
 
 PARAM = -DBAREMETAL
 PARAM += -DPIC32MX7
@@ -18,7 +21,6 @@ PARAM += -DCONS_MAJOR=UART_MAJOR
 PARAM += -DBUS_DIV=1
 PARAM += -DBUS_KHZ=80000
 PARAM += -DCPU_KHZ=80000
-
 LDSCRIPT = "baremetal/script.ld"
 
 include ../gcc-config.mk
@@ -101,11 +103,14 @@ SYSTEM_DEP      = Makefile ioconf.c machine sys .deps $(SYSTEM_OBJ)
 SYSTEM_LD_HEAD  = sh ../newvers.sh > vers.c; $(CC) $(CFLAGS) -c vers.c; rm -f $@
 SYSTEM_LD       = -@echo $(LD) $(LDFLAGS) '$$(SYSTEM_OBJ)' vers.o -o $@; \
                   $(LD) $(LDFLAGS) $(SYSTEM_OBJ) vers.o -o $@
-
 SYSTEM_LD_TAIL  = $(SIZE) $@; \
                   $(OBJCOPY) -O ihex --change-addresses=0x80000000 $@ $(basename $@).hex; \
                   $(OBJCOPY) -O binary -R .boot -R .config $@ $(basename $@).bin; \
                   $(OBJDUMP) -d -S $@ > $(basename $@).dis
+
+.PHONY:	all clean clean-all machine sys .deps
+
+all: unix
 
 unix: unix.elf
 
@@ -116,8 +121,6 @@ unix.elf: $(SYSTEM_DEP) swapunix.o
 
 swapunix.o: swapunix.c
 	$(COMPILE_C)
-
-all: unix
 
 clean:
 	rm -rf .deps *.elf *.o *.map *.dis *.bin machine sys
