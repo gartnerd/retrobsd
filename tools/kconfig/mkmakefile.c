@@ -385,7 +385,7 @@ void do_rules(f)
         special = ftp->f_special;
         if (special == 0) {
             static char cmd[128];
-            sprintf(cmd, "${COMPILE_%c}", toupper(och));
+            sprintf(cmd, "$(COMPILE_%c)", toupper(och));
             special = cmd;
         }
         *cp = och;
@@ -403,14 +403,14 @@ void do_load(f)
     register int first;
     struct file_list *do_systemspec();
 
-    for (first = 1, fl = conf_list; fl; first = 0)
-        fl = fl->f_type == SYSTEMSPEC ?
-            do_systemspec(f, fl, first) : fl->f_next;
     fputs("all:", f);
     for (fl = conf_list; fl; fl = fl->f_next)
         if (fl->f_type == SYSTEMSPEC)
-            fprintf(f, " %s", fl->f_needs);
+            fprintf(f, " %s\n", fl->f_needs);
     putc('\n', f);
+
+    for (first = 1, fl = conf_list; fl; first = 0)
+        fl = fl->f_type == SYSTEMSPEC ? do_systemspec(f, fl, first) : fl->f_next;
 }
 
 /*
@@ -438,6 +438,20 @@ void makefile()
         perror("Makefile");
         exit(1);
     }
+
+    // DG - advance to a location after info block
+    // DG - assume that the first line in the file
+    // DG - is a comment
+    while (fgets(line, BUFSIZ, ifp) != 0) {
+        if (*line == '#') {
+            fprintf(ofp, "%s", line);
+        }
+	else {
+	   fprintf(ofp, "\n");
+	   break;
+	}
+    }
+
     fprintf(ofp, "PARAM = -D%s\n", raise(board));
     if (cputype == 0) {
         printf("cpu type must be specified\n");
@@ -483,7 +497,7 @@ void makefile()
         fprintf(ofp, "PARAM += -DMAXUSERS=%d\n", maxusers);
 
     if (ldscript)
-        fprintf(ofp, "LDSCRIPT = \"%s\"\n", ldscript);
+        fprintf(ofp, "LDSCRIPT = \"%s\"\n\n", ldscript);
 
     for (op = mkopt; op; op = op->op_next)
         fprintf(ofp, "%s = %s\n", op->op_name, op->op_value);
@@ -534,7 +548,7 @@ void do_swapspec(f, name)
         fprintf(f, "swap%s.o: swap%s.c\n", name, name);
     else
         fprintf(f, "swapgeneric.o: $A/%s/swapgeneric.c\n", archname);
-    fprintf(f, "\t${COMPILE_C}\n\n");
+    fprintf(f, "\t$(COMPILE_C)\n");
 }
 
 struct file_list *
@@ -545,14 +559,14 @@ do_systemspec(f, fl, first)
 {
     fprintf(f, "%s: %s.elf\n\n", fl->f_needs, fl->f_needs);
 
-    fprintf(f, "%s.elf: ${SYSTEM_DEP} swap%s.o", fl->f_needs, fl->f_fn);
+    fprintf(f, "%s.elf: $(SYSTEM_DEP) swap%s.o", fl->f_needs, fl->f_fn);
     // Don't use newvers target.
     // A preferred way is to run newvers.sh from SYSTEM_LD_HEAD macro.
     //if (first)
     //  fprintf(f, " newvers");
-    fprintf(f, "\n\t${SYSTEM_LD_HEAD}\n");
-    fprintf(f, "\t${SYSTEM_LD} swap%s.o\n", fl->f_fn);
-    fprintf(f, "\t${SYSTEM_LD_TAIL}\n\n");
+    fprintf(f, "\n\t$(SYSTEM_LD_HEAD)\n");
+    fprintf(f, "\t$(SYSTEM_LD) swap%s.o\n", fl->f_fn);
+    fprintf(f, "\t$(SYSTEM_LD_TAIL)\n\n");
     do_swapspec(f, fl->f_fn);
     for (fl = fl->f_next; fl; fl = fl->f_next)
         if (fl->f_type != SWAPSPEC)
