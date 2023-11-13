@@ -1,3 +1,12 @@
+#
+# Makefile for RetroBSD, pic32 target
+#
+# DEBUG is set to -g by kconfig if debugging is requested (kconfig -g).
+#
+# DG - Do not edit by hand. Makefile created from template (Makefile.kconf)
+# DG - and modified by kconfig
+#
+
 PARAM = -DMMB_MX7
 PARAM += -DPIC32MX7
 PARAM += -DUARTUSB_ENABLED
@@ -25,38 +34,34 @@ PARAM += -DBUS_DIV=1
 PARAM += -DBUS_KHZ=80000
 PARAM += -DCPU_KHZ=80000
 LDSCRIPT = "mmb-mx7/bootloader.ld"
-#
-# Makefile for RetroBSD, pic32 target
-#
-# DEBUG is set to -g by kconfig if debugging is requested (kconfig -g).
-#
+
 include ../gcc-config.mk
 
-AS              = ${MIPS_GCC_PREFIX}as ${DEBUG} -mips32r2 -EL
-CC              = ${MIPS_GCC_PREFIX}gcc ${DEBUG} -mips32r2 -EL -nostdinc -fno-builtin -Werror -Wall
-CPP             = ${MIPS_GCC_PREFIX}cpp
-LD              = ${MIPS_GCC_PREFIX}gcc -mips32r2 -EL
-LDFLAGS         = -nostdlib -T ../${LDSCRIPT} -Wl,-Map=$(basename $@).map
-SIZE            = ${MIPS_GCC_PREFIX}size
-OBJCOPY         = ${MIPS_GCC_PREFIX}objcopy
-OBJDUMP         = ${MIPS_GCC_PREFIX}objdump
+AS              = $(MIPS_GCC_PREFIX)as $(DEBUG) -mips32r2 -EL
+CC              = $(MIPS_GCC_PREFIX)gcc $(DEBUG) -mips32r2 -EL -nostdinc -fno-builtin -Werror -Wall
+CPP             = $(MIPS_GCC_PREFIX)cpp
+LD              = $(MIPS_GCC_PREFIX)gcc -mips32r2 -EL
+LDFLAGS         = -nostdlib -T ../$(LDSCRIPT) -Wl,-Map=$(basename $@).map
+SIZE            = $(MIPS_GCC_PREFIX)size
+OBJCOPY         = $(MIPS_GCC_PREFIX)objcopy
+OBJDUMP         = $(MIPS_GCC_PREFIX)objdump
 
-ifneq (${MIPS_GCC_FORMAT},)
-    LDFLAGS     += -Wl,--oformat=${MIPS_GCC_FORMAT}
+ifneq ($(MIPS_GCC_FORMAT),)
+    LDFLAGS     += -Wl,--oformat=$(MIPS_GCC_FORMAT)
 endif
 
 # sources are located via $S relative to the compilation directory
 S               = ../..
 
 DEPFLAGS	= -MT $@ -MP -MD -MF .deps/$*.dep
-DEFS            = -I. ${PARAM} -DKERNEL $(DEPFLAGS)
-CFLAGS          = -O ${DEFS}
+DEFS            = -I. $(PARAM) -DKERNEL $(DEPFLAGS)
+CFLAGS          = -O $(DEFS)
 
-# compile rules: rules are named COMPILE_${SUFFIX}
+# compile rules: rules are named COMPILE_$(SUFFIX)
 # SUFFIX is the file suffix, capitalized (e.g. C for a .c file).
 
-COMPILE_C       = ${CC} -c ${CFLAGS} $<
-COMPILE_S       = ${CC} -c ${DEFS} $<
+COMPILE_C       = $(CC) -c $(CFLAGS) $<
+COMPILE_S       = $(CC) -c $(DEFS) $<
 
 OBJS = exec_aout.o exec_conf.o exec_elf.o exec_script.o exec_subr.o \
 	init_main.o init_sysent.o kern_clock.o kern_descrip.o \
@@ -101,34 +106,36 @@ CFILES = $S/kernel/exec_aout.c $S/kernel/exec_conf.c $S/kernel/exec_elf.c \
 	$S/pic32/usb_uart.c swapunix.c 
 
 # load lines for config "xxx" will be emitted as:
-# xxx: ${SYSTEM_DEP} swapxxx.o
-#	${SYSTEM_LD_HEAD}
-#	${SYSTEM_LD} swapxxx.o
-#	${SYSTEM_LD_TAIL}
-SYSTEM_OBJ      = startup.o ${OBJS} ioconf.o
+# xxx: $(SYSTEM_DEP) swapxxx.o
+#	$(SYSTEM_LD_HEAD)
+#	$(SYSTEM_LD) swapxxx.o
+#	$(SYSTEM_LD_TAIL)
+SYSTEM_OBJ      = startup.o $(OBJS) ioconf.o
 ifeq (devcfg.c,$(wildcard devcfg.c))
     SYSTEM_OBJ  += devcfg.o
 endif
-SYSTEM_DEP      = Makefile ioconf.c machine sys .deps ${SYSTEM_OBJ}
-SYSTEM_LD_HEAD  = sh ../newvers.sh > vers.c; ${CC} $(CFLAGS) -c vers.c; rm -f $@
-SYSTEM_LD       = -@echo ${LD} ${LDFLAGS} '$${SYSTEM_OBJ}' vers.o -o $@; \
-                  ${LD} ${LDFLAGS} ${SYSTEM_OBJ} vers.o -o $@
-SYSTEM_LD_TAIL  = ${SIZE} $@; \
+SYSTEM_DEP      = Makefile ioconf.c machine sys .deps $(SYSTEM_OBJ)
+SYSTEM_LD_HEAD  = sh ../newvers.sh > vers.c; $(CC) $(CFLAGS) -c vers.c; rm -f $@
+SYSTEM_LD       = -@echo $(LD) $(LDFLAGS) '$$(SYSTEM_OBJ)' vers.o -o $@; \
+                  $(LD) $(LDFLAGS) $(SYSTEM_OBJ) vers.o -o $@
+SYSTEM_LD_TAIL  = $(SIZE) $@; \
                   $(OBJCOPY) -O ihex --change-addresses=0x80000000 $@ $(basename $@).hex; \
                   $(OBJCOPY) -O binary -R .boot -R .config $@ $(basename $@).bin; \
                   $(OBJDUMP) -d -S $@ > $(basename $@).dis
 
-unix: unix.elf
-
-unix.elf: ${SYSTEM_DEP} swapunix.o
-	${SYSTEM_LD_HEAD}
-	${SYSTEM_LD} swapunix.o
-	${SYSTEM_LD_TAIL}
-
-swapunix.o: swapunix.c
-	${COMPILE_C}
+.PHONY:	all clean clean-all machine sys .deps
 
 all: unix
+
+unix: unix.elf
+
+unix.elf: $(SYSTEM_DEP) swapunix.o
+	$(SYSTEM_LD_HEAD)
+	$(SYSTEM_LD) swapunix.o
+	$(SYSTEM_LD_TAIL)
+
+swapunix.o: swapunix.c
+	$(COMPILE_C)
 
 clean:
 	rm -rf .deps *.elf *.o *.map *.dis *.bin machine sys
@@ -154,211 +161,211 @@ sys:
 	mkdir .deps
 
 startup.o: ../startup.S
-	${COMPILE_S}
+	$(COMPILE_S)
 
 ioconf.o: ioconf.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 exec_aout.o: $S/kernel/exec_aout.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 exec_conf.o: $S/kernel/exec_conf.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 exec_elf.o: $S/kernel/exec_elf.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 exec_script.o: $S/kernel/exec_script.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 exec_subr.o: $S/kernel/exec_subr.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 init_main.o: $S/kernel/init_main.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 init_sysent.o: $S/kernel/init_sysent.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 kern_clock.o: $S/kernel/kern_clock.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 kern_descrip.o: $S/kernel/kern_descrip.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 kern_exec.o: $S/kernel/kern_exec.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 kern_exit.o: $S/kernel/kern_exit.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 kern_fork.o: $S/kernel/kern_fork.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 kern_mman.o: $S/kernel/kern_mman.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 kern_proc.o: $S/kernel/kern_proc.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 kern_prot.o: $S/kernel/kern_prot.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 kern_prot2.o: $S/kernel/kern_prot2.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 kern_resource.o: $S/kernel/kern_resource.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 kern_sig.o: $S/kernel/kern_sig.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 kern_sig2.o: $S/kernel/kern_sig2.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 kern_subr.o: $S/kernel/kern_subr.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 kern_synch.o: $S/kernel/kern_synch.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 kern_sysctl.o: $S/kernel/kern_sysctl.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 kern_time.o: $S/kernel/kern_time.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 subr_prf.o: $S/kernel/subr_prf.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 subr_rmap.o: $S/kernel/subr_rmap.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 sys_generic.o: $S/kernel/sys_generic.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 sys_inode.o: $S/kernel/sys_inode.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 sys_pipe.o: $S/kernel/sys_pipe.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 sys_process.o: $S/kernel/sys_process.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 syscalls.o: $S/kernel/syscalls.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 tty.o: $S/kernel/tty.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 tty_subr.o: $S/kernel/tty_subr.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 tty_tty.o: $S/kernel/tty_tty.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 ufs_alloc.o: $S/kernel/ufs_alloc.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 ufs_bio.o: $S/kernel/ufs_bio.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 ufs_bmap.o: $S/kernel/ufs_bmap.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 ufs_dsort.o: $S/kernel/ufs_dsort.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 ufs_fio.o: $S/kernel/ufs_fio.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 ufs_inode.o: $S/kernel/ufs_inode.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 ufs_mount.o: $S/kernel/ufs_mount.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 ufs_namei.o: $S/kernel/ufs_namei.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 ufs_subr.o: $S/kernel/ufs_subr.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 ufs_syscalls.o: $S/kernel/ufs_syscalls.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 ufs_syscalls2.o: $S/kernel/ufs_syscalls2.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 vfs_vnops.o: $S/kernel/vfs_vnops.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 vm_sched.o: $S/kernel/vm_sched.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 vm_swap.o: $S/kernel/vm_swap.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 vm_swp.o: $S/kernel/vm_swp.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 clock.o: $S/pic32/clock.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 cons.o: $S/pic32/cons.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 devsw.o: $S/pic32/devsw.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 exception.o: $S/pic32/exception.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 machdep.o: $S/pic32/machdep.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 mem.o: $S/pic32/mem.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 signal.o: $S/pic32/signal.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 swap.o: $S/pic32/swap.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 sysctl.o: $S/pic32/sysctl.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 adc.o: $S/pic32/adc.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 gpio.o: $S/pic32/gpio.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 pwm.o: $S/pic32/pwm.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 sd.o: $S/pic32/sd.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 spi.o: $S/pic32/spi.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 spi_bus.o: $S/pic32/spi_bus.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 uart.o: $S/pic32/uart.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 usb_device.o: $S/pic32/usb_device.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 usb_function_cdc.o: $S/pic32/usb_function_cdc.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 usb_uart.o: $S/pic32/usb_uart.c
-	${COMPILE_C}
+	$(COMPILE_C)
 
 
 ifeq (.deps, $(wildcard .deps))
