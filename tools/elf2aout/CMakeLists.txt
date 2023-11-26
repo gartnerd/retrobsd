@@ -20,8 +20,7 @@ target_compile_options(elf2aout PRIVATE -m32)
 #Recognized build types: Debug, Release, RelWithDebInfo, MinSizeRel
 if("${CMAKE_BUILD_TYPE}" STREQUAL Debug)
 	if("${TR}")
-		message("CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
-		message("CMAKE_SOURCE_DIR: ${CMAKE_SOURCE_DIR}")
+		message("elf2aout - CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 	endif()
 	
 	#Debug will cause cmake to automatically add the flag -g
@@ -29,7 +28,7 @@ if("${CMAKE_BUILD_TYPE}" STREQUAL Debug)
 	target_compile_options(elf2aout PRIVATE -O -Wall)
 
 elseif("${TR}")
-	message("CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
+	message("elf2aout - CMAKE_BUILD_TYPE: ${CMAKE_BUILD_TYPE}")
 endif()
 
 target_link_options(elf2aout PRIVATE -m32)
