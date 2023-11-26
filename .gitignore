@@ -31,3 +31,5 @@ Makefile.user
 *.log
 *.txt
 *.d
+
+!CMakeLists.txt
