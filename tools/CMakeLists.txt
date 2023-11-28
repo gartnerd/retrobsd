@@ -5,6 +5,8 @@ project(retrobsd LANGUAGES C)
 add_subdirectory(elf2aout)
 add_subdirectory(fsutil)
 add_subdirectory(virtualmips)
+add_subdirectory(mkrd)
+add_subdirectory(kconfig)
 
 #set(TR OFF)
 #set_property(C_STANDARD_REQUIRED ON)
