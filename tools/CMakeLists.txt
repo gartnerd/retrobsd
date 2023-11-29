@@ -7,6 +7,7 @@ add_subdirectory(fsutil)
 add_subdirectory(virtualmips)
 add_subdirectory(mkrd)
 add_subdirectory(kconfig)
+add_subdirectory(icache)
 
 #set(TR OFF)
 #set_property(C_STANDARD_REQUIRED ON)
