@@ -93,11 +93,16 @@ ExternalProject_Add(
     INSTALL_COMMAND ""  # Disable
 )
 
+# Extract the build directory name from CMAKE_BINARY_DIR
+get_filename_component(BUILD_DIR_NAME ${CMAKE_BINARY_DIR} NAME)
+
 ExternalProject_Add(
     retrobsd_native_libc
     PREFIX ${CMAKE_BINARY_DIR}/libc-build
     SOURCE_DIR ${CMAKE_SOURCE_DIR}/libc
-    CMAKE_ARGS -DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/libc/mips32.toolchain.cmake
+    CMAKE_ARGS 
+    		-DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/libc/mips32.toolchain.cmake
+		-DBUILD_DIR_NAME=${BUILD_DIR_NAME}  # Pass the build directory name as a variable
     INSTALL_COMMAND ""  # Disable
 )
 

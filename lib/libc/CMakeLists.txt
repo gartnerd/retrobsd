@@ -18,8 +18,7 @@ file(MAKE_DIRECTORY ${OBJECT_OUTPUT_DIR}/stubs)
 file(MAKE_DIRECTORY ${OBJECT_OUTPUT_DIR}/sh)
 
 #file(GLOB_RECURSE ASM_FILES ${LIBCDIR}/mips/**/*.S)
-#get assembler files
-#file(GLOB ASYS_FILES ${LIBCDIR}/mips/sys/*.S)
+
 file(GLOB ASTR_FILES ${LIBCDIR}/mips/string/*.S)
 
 list(APPEND ASM_FILES ${ASYS_FILES} ${ASTR_FILES} ${AGEN_FILES} ${ARNT_FILES})
@@ -94,6 +93,8 @@ foreach(ASM_FILE ${ASM_FILES})
 	add_custom_target(${ASM_NAME}_target ALL DEPENDS ${OBJ_FILE})
 	add_dependencies(assembler_objects ${ASM_NAME}_target)
 
+	#message(STATUS "ASM_NAME: ${ASM_NAME}")
+
 endforeach()
 
 # Custom target to build object files from C sources
@@ -115,6 +116,8 @@ foreach(C_FILE ${C_FILES})
 	list(APPEND C_GEN_FILES ${OBJ_FILE}) 
 	add_custom_target(${C_NAME}_tgt ALL DEPENDS ${OBJ_FILE})
 	add_dependencies(c_objects ${C_NAME}_tgt)
+
+	#message(STATUS "C_NAME: ${C_NAME}")
 
 endforeach()
 
@@ -147,17 +150,23 @@ endforeach()
 #gather all the generated object files into a single list
 list(APPEND ALL_O_FILES ${A_GEN_FILES} ${C_GEN_FILES} ${DYN_GEN_FILES})
 
-#message("Object files: ${DYN_GEN_FILES}")
+#message("ALL_O_FILES: ${ALL_O_FILES}")
 
-# Custom target to build the static library
-#add_library(libc STATIC ${A_GEN_FILES} ${C_GEN_FILES} ${DYN_GEN_FILES})
-#add_dependencies(libc assembler_objects c_objects)
+add_custom_target(libc ALL DEPENDS assembler_objects c_objects)
+#add_dependencies(build_libc assembler_objects c_objects)
 
+# Custom command for creating libc.a
 add_custom_command(
-    OUTPUT libc.a
-    COMMAND ar rcs libc.a ${ALL_O_FILES}
-    DEPENDS ${ALL_O_FILES} 
+    TARGET libc
+    POST_BUILD
+    COMMAND ${BUILD_DIR_NAME}/ar rc libc.a ${A_GEN_FILES} ${C_GEN_FILES} ${DYN_GEN_FILES}
+    DEPENDS ${A_GEN_FILES} ${C_GEN_FILES}
+    COMMENT "building libc.a"
 )
 
-add_custom_target(build_libc DEPENDS libc.a)
+message(STATUS "build_libc dependencies: ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR}")
+message(STATUS "CMAKE_BINARY_DIR/BUILD_DIR_NAME ${CMAKE_BINARY_DIR} ${BUILD_DIR_NAME}")
+# Custom target to build the static library
+#add_library(libc STATIC ${A_GEN_FILES} ${C_GEN_FILES} ${DYN_GEN_FILES})
+
 
