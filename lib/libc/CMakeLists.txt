@@ -6,7 +6,7 @@ set(LIBCDIR ${TOPSRC}/src/libc)
 set(OBJECT_OUTPUT_DIR ${CMAKE_BINARY_DIR}/sysobj)
 
 set(CMAKE_ASM_FLAGS ${CMAKE_ASM_FLAGS} -B${TOPSRC}/lib/ -I${LIBCDIR}/mips/sys -DLWHI=lwr -DLWLO=lwl -DSWHI=swr -DSWLO=swl) 
-set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} -Os -B${TOPSRC}/lib/  -Wall -Werror)
+set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} -Os -B${TOPSRC}/lib/ -Wall -Werror)
 
 set(AGEN_FILES 	${LIBCDIR}/mips/gen/_setjmp.S ${LIBCDIR}/mips/gen/htonl.S ${LIBCDIR}/mips/gen/htons.S)
 set(ARNT_FILES ${LIBCDIR}/runtime/sc_case.S)
@@ -121,6 +121,7 @@ foreach(C_FILE ${C_FILES})
 
 endforeach()
 
+#reset CMAKE_C_FLAGS variable
 set(CMAKE_C_FLAGS )
 set(CMAKE_C_FLAGS -mips32r2 -EL -msoft-float -nostdinc -fshort-double -I${TOPSRC}/include)
 
@@ -159,13 +160,20 @@ add_custom_target(libc ALL DEPENDS assembler_objects c_objects)
 add_custom_command(
     TARGET libc
     POST_BUILD
-    COMMAND ${BUILD_DIR_NAME}/ar rc libc.a ${A_GEN_FILES} ${C_GEN_FILES} ${DYN_GEN_FILES}
+    #COMMAND ${retrobsd_BINARY_DIR}/ar rc libc.a ${A_GEN_FILES} ${C_GEN_FILES} ${DYN_GEN_FILES}
+    COMMAND ${retrobsd_BINARY_DIR}/ar rc libc.a ${A_GEN_FILES}
+    COMMAND ${retrobsd_BINARY_DIR}/ar q  libc.a ${C_GEN_FILES}
+    COMMAND ${retrobsd_BINARY_DIR}/ar q  libc.a ${DYN_GEN_FILES}
+    COMMAND ${retrobsd_BINARY_DIR}/ranlib libc.a
     DEPENDS ${A_GEN_FILES} ${C_GEN_FILES}
     COMMENT "building libc.a"
 )
 
+#retrobsd_BINARY_DIR:STATIC
 message(STATUS "build_libc dependencies: ${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR}")
-message(STATUS "CMAKE_BINARY_DIR/BUILD_DIR_NAME ${CMAKE_BINARY_DIR} ${BUILD_DIR_NAME}")
+message(STATUS "CMAKE_BINARY_DIR ${CMAKE_BINARY_DIR}")
+message(STATUS "retrobsd_BINARY_DIR: ${retrobsd_BINARY_DIR}")
+
 # Custom target to build the static library
 #add_library(libc STATIC ${A_GEN_FILES} ${C_GEN_FILES} ${DYN_GEN_FILES})
 

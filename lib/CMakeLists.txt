@@ -102,7 +102,7 @@ ExternalProject_Add(
     SOURCE_DIR ${CMAKE_SOURCE_DIR}/libc
     CMAKE_ARGS 
     		-DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/libc/mips32.toolchain.cmake
-		-DBUILD_DIR_NAME=${BUILD_DIR_NAME}  # Pass the build directory name as a variable
+		-Dretrobsd_BINARY_DIR=${retrobsd_BINARY_DIR}  # Pass the build directory name as a variable
     INSTALL_COMMAND ""  # Disable
 )
 
