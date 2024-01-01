@@ -126,3 +126,43 @@ ExternalProject_Add(
     INSTALL_COMMAND ""  # Disable
 )
 
+ExternalProject_Add(
+    retrobsd_native_libtermlib
+    PREFIX ${CMAKE_BINARY_DIR}/libtermlib-build
+    SOURCE_DIR ${CMAKE_SOURCE_DIR}/libtermlib
+    CMAKE_ARGS 
+    		-DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/libtermlib/mips32.toolchain.cmake
+		-Dretrobsd_BINARY_DIR=${retrobsd_BINARY_DIR}  # Pass the build directory name as a variable
+    INSTALL_COMMAND ""  # Disable
+)
+
+ExternalProject_Add(
+    retrobsd_native_libwiznet
+    PREFIX ${CMAKE_BINARY_DIR}/libwiznet-build
+    SOURCE_DIR ${CMAKE_SOURCE_DIR}/libwiznet
+    CMAKE_ARGS 
+    		-DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/libwiznet/mips32.toolchain.cmake
+		-Dretrobsd_BINARY_DIR=${retrobsd_BINARY_DIR}  # Pass the build directory name as a variable
+    INSTALL_COMMAND ""  # Disable
+)
+
+ExternalProject_Add(
+    retrobsd_native_libreadline
+    PREFIX ${CMAKE_BINARY_DIR}/libreadline-build
+    SOURCE_DIR ${CMAKE_SOURCE_DIR}/libreadline
+    CMAKE_ARGS 
+    		-DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/libreadline/mips32.toolchain.cmake
+		-Dretrobsd_BINARY_DIR=${retrobsd_BINARY_DIR}  # Pass the build directory name as a variable
+    INSTALL_COMMAND ""  # Disable
+)
+
+ExternalProject_Add(
+    retrobsd_native_libgpanel
+    PREFIX ${CMAKE_BINARY_DIR}/libgpanel-build
+    SOURCE_DIR ${CMAKE_SOURCE_DIR}/libgpanel
+    CMAKE_ARGS 
+    		-DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/libgpanel/mips32.toolchain.cmake
+		-Dretrobsd_BINARY_DIR=${retrobsd_BINARY_DIR}  # Pass the build directory name as a variable
+    INSTALL_COMMAND ""  # Disable
+)
+
