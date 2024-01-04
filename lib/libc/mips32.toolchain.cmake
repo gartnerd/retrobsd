@@ -7,7 +7,7 @@ set(TOPSRC /home/gartnerd/code/myretrobsd)
 set(CMAKE_C_COMPILER /usr/local/mips-2013.11/bin/mips-sde-elf-gcc)
 set(CMAKE_CXX_COMPILER /usr/local/mips-2013.11/bin/mips-sde-elf-g++)
 
-set(CMAKE_SYSTEM_NAME Generic)
+set(CMAKE_SYSTEM_NAME Linux)
 set(CMAKE_SYSTEM_PROCESSOR mips32)
 
 # Specify the cross-compiler prefix
@@ -21,11 +21,11 @@ set(CMAKE_FIND_ROOT_PATH /usr/local/mips-2013.11/bin)
 # Specify compiler flags - Debug, Release, RelMinSize, etc
 # There is some limit on the length of arguments. The generated make file
 # will have malformed targets. This is why this is broken into two CMAKE_C_FLAGS assignments
-# Do not quote the arguments - this will cause issues with the target creation in the make file
+# Do not quote the arguments - this will cause issues with the target creation in the make file - I'm not sure about this - it seemed to be a problem
 #set(CMAKE_C_FLAGS -mips32r2 -EL -msoft-float -nostdinc -fshort-double -Os -I${TOPSRC}/include -x assembler-with-cpp -c -B${TOPSRC}/lib/)
 #set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} -I${TOPSRC}/src/libc/mips/sys -I/usr/local/mips-2013.11/mips-sde-elf/include/sys -DLWHI=lwr -DLWLO=lwl -DSWHI=swr -DSWLO=swl) 
 
-set(CMAKE_C_FLAGS -mips32r2 -EL -msoft-float -nostdinc -fshort-double -I${TOPSRC}/include)
+set(CMAKE_C_FLAGS "-mips32r2 -EL -msoft-float -nostdinc -fshort-double -I${TOPSRC}/include")
 set(AS -x assembler-with-cpp -c)
 
 # Specify linker flags - EXE,STATIC,SHARED & MODULE

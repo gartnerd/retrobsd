@@ -8,6 +8,7 @@ set(TOPSRC "/home/gartnerd/code/myretrobsd")
 # Have to create soft links to some header files
 # to emulate what happens in the original makefile
 add_custom_target(add_headers 
+	COMMAND ${CMAKE_COMMAND} -E rm -f ${CMAKE_CURRENT_SOURCE_DIR}/*.h #remove and recreate sym links
 	COMMAND ${CMAKE_COMMAND} -E create_symlink ${TOPSRC}/include/a.out.h	${CMAKE_CURRENT_SOURCE_DIR}/a.out.h 
 	COMMAND ${CMAKE_COMMAND} -E create_symlink ${TOPSRC}/include/ar.h	${CMAKE_CURRENT_SOURCE_DIR}/ar.h      
 	COMMAND ${CMAKE_COMMAND} -E create_symlink ${TOPSRC}/include/nlist.h	${CMAKE_CURRENT_SOURCE_DIR}/nlist.h  
