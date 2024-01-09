@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 project(myRetroBSD_native_libc LANGUAGES)
 
-set(TOPSRC /home/gartnerd/code/myretrobsd)
+set(TOPSRC /home/gartnerd/code/myRetroBSD)
 set(LIBCDIR ${TOPSRC}/src/libc)
 set(OBJECT_OUTPUT_DIR ${CMAKE_BINARY_DIR}/sysobj)
 

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20.0)
 project(retrobsd LANGUAGES C)
 
 # I hope this is a temporary hack
-set(TOPSRC "/home/gartnerd/code/myretrobsd")
+set(TOPSRC "/home/gartnerd/code/myRetroBSD")
 
 # DG - Initial adding a hack to emulate original
 # Have to create soft links to some header files

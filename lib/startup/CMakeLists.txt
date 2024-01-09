@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.20.0)
 project(retrobsd_native LANGUAGES C)
 
-set(TOPSRC /home/gartnerd/code/myretrobsd)
+set(TOPSRC /home/gartnerd/code/myRetroBSD)
 #set_target_properties(crt PROPERTIES C_STANDARD 90)
 
 # Basically all this build has to do is create an object file
