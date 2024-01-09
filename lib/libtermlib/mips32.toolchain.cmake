@@ -3,6 +3,8 @@
 
 set(TOPSRC /home/gartnerd/code/myretrobsd)
 
+#set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+
 # Set the compiler
 set(CMAKE_C_COMPILER /usr/local/mips-2013.11/bin/mips-sde-elf-gcc)
 set(CMAKE_CXX_COMPILER /usr/local/mips-2013.11/bin/mips-sde-elf-g++)
@@ -18,11 +20,5 @@ set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 # Specify the root directory of the cross-compiler
 set(CMAKE_FIND_ROOT_PATH /usr/local/mips-2013.11/bin)
 
-# Specify compiler flags - Debug, Release, RelMinSize, etc
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mips32r2 -EL -msoft-float -nostdinc -fshort-double -Os -I${TOPSRC}/include")
+set(CMAKE_C_FLAGS "-mips32r2 -EL -msoft-float -nostdinc -fshort-double -I${TOPSRC}/include")
 
-# Specify linker flags - EXE,STATIC,SHARED & MODULE
-set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -Wl,--oformat=elf32-tradlittlemips -N -nostartfiles -fno-dwarf2-cfi-asm -T${TOPSRC}/src/elf32-mips.ld ${TOPSRC}/src/crt0.o -L${TOPSRC}/src
-")
-
-# Additional settings as needed

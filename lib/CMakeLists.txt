@@ -8,6 +8,7 @@ set(TOPSRC "/home/gartnerd/code/myRetroBSD")
 # Have to create soft links to some header files
 # to emulate what happens in the original makefile
 add_custom_target(add_headers 
+	COMMAND ${CMAKE_COMMAND} -E rm -f ${CMAKE_CURRENT_SOURCE_DIR}/*.h #remove and recreate sym links
 	COMMAND ${CMAKE_COMMAND} -E create_symlink ${TOPSRC}/include/a.out.h	${CMAKE_CURRENT_SOURCE_DIR}/a.out.h 
 	COMMAND ${CMAKE_COMMAND} -E create_symlink ${TOPSRC}/include/ar.h	${CMAKE_CURRENT_SOURCE_DIR}/ar.h      
 	COMMAND ${CMAKE_COMMAND} -E create_symlink ${TOPSRC}/include/nlist.h	${CMAKE_CURRENT_SOURCE_DIR}/nlist.h  
@@ -94,7 +95,7 @@ ExternalProject_Add(
 )
 
 # Extract the build directory name from CMAKE_BINARY_DIR
-get_filename_component(BUILD_DIR_NAME ${CMAKE_BINARY_DIR} NAME)
+#get_filename_component(BUILD_DIR_NAME ${CMAKE_BINARY_DIR} NAME)
 
 ExternalProject_Add(
     retrobsd_native_libc
@@ -102,8 +103,67 @@ ExternalProject_Add(
     SOURCE_DIR ${CMAKE_SOURCE_DIR}/libc
     CMAKE_ARGS 
     		-DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/libc/mips32.toolchain.cmake
-		-DBUILD_DIR_NAME=${BUILD_DIR_NAME}  # Pass the build directory name as a variable
+		-Dretrobsd_BINARY_DIR=${retrobsd_BINARY_DIR}  # Pass the build directory name as a variable
     INSTALL_COMMAND ""  # Disable
 )
 
+ExternalProject_Add(
+    retrobsd_native_libm
+    PREFIX ${CMAKE_BINARY_DIR}/libm-build
+    SOURCE_DIR ${CMAKE_SOURCE_DIR}/libm
+    CMAKE_ARGS 
+    		-DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/libm/mips32.toolchain.cmake
+		-Dretrobsd_BINARY_DIR=${retrobsd_BINARY_DIR}  # Pass the build directory name as a variable
+    INSTALL_COMMAND ""  # Disable
+)
+
+ExternalProject_Add(
+    retrobsd_native_libcurses
+    PREFIX ${CMAKE_BINARY_DIR}/libcurses-build
+    SOURCE_DIR ${CMAKE_SOURCE_DIR}/libcurses
+    CMAKE_ARGS 
+    		-DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/libcurses/mips32.toolchain.cmake
+		-Dretrobsd_BINARY_DIR=${retrobsd_BINARY_DIR}  # Pass the build directory name as a variable
+    INSTALL_COMMAND ""  # Disable
+)
+
+ExternalProject_Add(
+    retrobsd_native_libtermlib
+    PREFIX ${CMAKE_BINARY_DIR}/libtermlib-build
+    SOURCE_DIR ${CMAKE_SOURCE_DIR}/libtermlib
+    CMAKE_ARGS 
+    		-DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/libtermlib/mips32.toolchain.cmake
+		-Dretrobsd_BINARY_DIR=${retrobsd_BINARY_DIR}  # Pass the build directory name as a variable
+    INSTALL_COMMAND ""  # Disable
+)
+
+ExternalProject_Add(
+    retrobsd_native_libwiznet
+    PREFIX ${CMAKE_BINARY_DIR}/libwiznet-build
+    SOURCE_DIR ${CMAKE_SOURCE_DIR}/libwiznet
+    CMAKE_ARGS 
+    		-DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/libwiznet/mips32.toolchain.cmake
+		-Dretrobsd_BINARY_DIR=${retrobsd_BINARY_DIR}  # Pass the build directory name as a variable
+    INSTALL_COMMAND ""  # Disable
+)
+
+ExternalProject_Add(
+    retrobsd_native_libreadline
+    PREFIX ${CMAKE_BINARY_DIR}/libreadline-build
+    SOURCE_DIR ${CMAKE_SOURCE_DIR}/libreadline
+    CMAKE_ARGS 
+    		-DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/libreadline/mips32.toolchain.cmake
+		-Dretrobsd_BINARY_DIR=${retrobsd_BINARY_DIR}  # Pass the build directory name as a variable
+    INSTALL_COMMAND ""  # Disable
+)
+
+ExternalProject_Add(
+    retrobsd_native_libgpanel
+    PREFIX ${CMAKE_BINARY_DIR}/libgpanel-build
+    SOURCE_DIR ${CMAKE_SOURCE_DIR}/libgpanel
+    CMAKE_ARGS 
+    		-DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/libgpanel/mips32.toolchain.cmake
+		-Dretrobsd_BINARY_DIR=${retrobsd_BINARY_DIR}  # Pass the build directory name as a variable
+    INSTALL_COMMAND ""  # Disable
+)
 
