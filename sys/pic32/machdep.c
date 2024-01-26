@@ -18,7 +18,7 @@
 #include <sys/msgbuf.h>
 #include <sys/namei.h>
 #include <sys/mount.h>
-#include <sys/systm.h>
+#include <sys/systm.h> 		/* bzero() */
 #include <sys/kconfig.h>
 #include <sys/tty.h>
 #include <machine/uart.h>
@@ -305,8 +305,8 @@ startup()
     LAT_CLR(GPIO_CLEAR_PORT) = 1 << GPIO_CLEAR_PIN;
     TRIS_CLR(GPIO_CLEAR_PORT) = 1 << GPIO_CLEAR_PIN;
 #endif
-#ifdef POWER_ENABLED
-    power_init();
+#ifdef POWER_ENABLED  /* Doesn't seem to get called for Olimex board */
+    power_init(); 
 #endif
 
     //SETVAL(0);

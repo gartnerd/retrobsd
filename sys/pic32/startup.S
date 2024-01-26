@@ -30,22 +30,51 @@
                 .set    mips32r2
                 .set    nomips16
 
-                .extern u
-                .extern u_end
-                .extern u0
+# u, u_end and u0 are defined in the linker script
+# bootloader.ld
+                .extern u	#address 0x80007400
+                .extern u_end	#address 0x80007400 + 3K
+                .extern u0	#address 0x80006800
+
+# could be referrng to "main" in kernel/init_main.c
                 .extern main
+
+# appears to be a function in pic32/exception.c
                 .extern exception
 
 #---------------------------------------
 # Reset vector: main entry point
-#
+#---------------------------------------
+# using ELF format for section definition
+# Create a section in the object file named
+# ".startup" that is allocatable and executable
+# section contains data - pg 45 esa_as pdf
+# The command objdump -h startup.o shows 
+# object file sections
+
                 .section .startup,"ax",@progbits
+
+# Set the location counter to 0 - ? 
                 .org    0
+
+# Setting the type for the symbol  _reset_vector_ as "function"
+# Choices for ELF are "function" or "object"
                 .type   _reset_vector_, @function
+
+# _reset_vector_ is a lable.
+# .globl tags the symbol _reset_vector_ making it 
+# visible to ld (linker? loader?)
+
 _reset_vector_: .globl  _reset_vector_
 
+# Silence a warning if explicit use of the 
+# temporary register "at" is detected
+# Possibly can be an issue when using macros
                 .set    noat
-                move    $1, $zero                       # Clear all regs
+
+# Zero out the contents of each register
+
+                move    $1, $zero
                 move    $2, $zero
                 move    $3, $zero
                 move    $4, $zero
@@ -76,21 +105,47 @@ _reset_vector_: .globl  _reset_vector_
                 move    $29, $zero
                 move    $30, $zero
                 move    $31, $zero
+
+# mfhi, mflo, mthi, mtlo: Move from hi and so on. These are 
+# instructions for accessing the integer multiply/divide unit 
+# result registers hi and lo. You won’t write the mflo/mfhi 
+# instructions in regular code if you stick to the synthetic 
+# mul and div instructions, which retrieve result data for themselves
+# mtlo - move to low, mthi - move to high
+
                 mtlo    $zero
                 mthi    $zero
+
+# re-enable use of the temporary register by the assembler
                 .set    at
 
                 la      $sp, u_end - 16                 # Stack at end of U area
                 la      $a0, main
-                jalr    $a0                             # Jump to main()
+
+# jump and link relative (jalr) 
+                jalr    $a0                             # Jump to main() in init_main.c
+
+
                 lui     $gp, 0x8000                     # Set global pointer (delay slot)
+
+# by convention k0 and k1 are reserved for
+# exception handling use. EPC -> exception program counter
 
                 la      $k0, UBASE
                 mtc0    $k0, $C0_EPC                    # Entry to user code.
 
-                mfc0    $k0, $C0_STATUS
+                mfc0    $k0, $C0_STATUS			# Status Register
+
+# logical 'or' the contents in the status register to :
+# 	-set the cpu to user mode - ST_UM
+#	-set the exception level  - ST_EXL
+#	-global interrupt enable  - ST_IE
+
                 ori     $k0, $k0, ST_UM | ST_EXL | ST_IE # Set user mode and enable interrupts
+
                 mtc0    $k0, $C0_STATUS                 # Put SR back
+
+# exception return
                 eret                                    # PC <= EPC; EXL <= 0
                 nop                                     # just to be safe
 

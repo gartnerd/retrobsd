@@ -3,10 +3,18 @@
  * Flash area for user starts at 9d003000.
  * Start address for user program is 9d004000.
  */
+
+/* default, big, little - used by -EB, -EL command line options*/
 OUTPUT_FORMAT("elf32-littlemips", "elf32-bigmips",
 	      "elf32-littlemips")
+
 OUTPUT_ARCH(mips)
+
+/* First instruction to execute - entry point */
 ENTRY(_reset_vector_)
+
+/* The MEMORY command describes the location and */
+/* size of blocks of memory in the target */
 MEMORY
 {
   flash                (rx)  : ORIGIN = 0x9d003000, LENGTH = 512K-12K
@@ -76,7 +84,7 @@ SECTIONS
    . = ALIGN (32 / 8);
   } > ram
   __bss_end = . ;
-  _end = .;
+  _end = . ;
 
   /* Stabs debugging sections.  */
   .stab          0 : { *(.stab) }
