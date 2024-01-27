@@ -30,8 +30,7 @@ int     boothowto;          /* reboot flags, from boot */
 /*
  * Initialize hash links for buffers.
  */
-static void
-bhinit()
+static void bhinit(void)
 {
     register int i;
     register struct bufhd *bp;
@@ -44,8 +43,7 @@ bhinit()
  * Initialize the buffer I/O system by freeing
  * all buffers and setting all device buffer lists to empty.
  */
-static void
-binit()
+static void binit(void)
 {
     register struct buf *bp;
     register int i;
@@ -69,8 +67,7 @@ binit()
  * Initialize clist by freeing all character blocks, then count
  * number of character devices. (Once-only routine)
  */
-static void
-cinit()
+static void cinit(void)
 {
     register int ccp;
     register struct cblock *cp;
@@ -97,8 +94,7 @@ cinit()
  *  fork - process 0 to schedule
  *       - process 1 execute bootstrap
  */
-int
-main()
+int main(void)
 {
     register struct proc *p;
     register int i;
