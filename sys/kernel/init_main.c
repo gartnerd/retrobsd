@@ -161,7 +161,7 @@ int main(void)
 
     startup(); //machdep.c
 
-    printf ("\n%s", version); //vers.c - board directory
+    printf("\n%s", version); //vers.c - board directory
 
     kconfig(); //machdep.c
 
@@ -186,7 +186,7 @@ int main(void)
         u.u_rlimit[i].rlim_cur = u.u_rlimit[i].rlim_max = RLIM_INFINITY;
 
     /* Initialize signal state for process 0 */
-    siginit (p); //kern_sig2.c
+    siginit(p); //kern_sig2.c
 
     /*
      * Initialize tables, protocols, and set up well-known inodes.
@@ -220,7 +220,7 @@ int main(void)
         panic("No root filesystem found!"); // systm.h
 
     mount[0].m_inodp = (struct inode*) 1;   /* XXX */
-    mount_updname (fs, "/", "root", 1, 4);
+    mount_updname(fs, "/", "root", 1, 4);
     time.tv_sec = fs->fs_time;
     boottime = time;
 
@@ -237,12 +237,12 @@ int main(void)
 
     mfree(swapmap, nswap, swapstart);
 
-    printf ("phys mem  = %u kbytes\n", physmem / 1024);
-    printf ("user mem  = %u kbytes\n", MAXMEM / 1024);
-    printf ("root dev  = (%d,%d)\n", major(rootdev), minor(rootdev));
-    printf ("swap dev  = (%d,%d)\n", major(swapdev), minor(swapdev));
-    printf ("root size = %u kbytes\n", fs->fs_fsize * DEV_BSIZE / 1024);
-    printf ("swap size = %u kbytes\n", nswap * DEV_BSIZE / 1024);
+    printf("phys mem  = %u kbytes\n", physmem / 1024);
+    printf("user mem  = %u kbytes\n", MAXMEM / 1024);
+    printf("root dev  = (%d,%d)\n", major(rootdev), minor(rootdev));
+    printf("swap dev  = (%d,%d)\n", major(swapdev), minor(swapdev));
+    printf("root size = %u kbytes\n", fs->fs_fsize * DEV_BSIZE / 1024);
+    printf("swap size = %u kbytes\n", nswap * DEV_BSIZE / 1024);
 
     /* Kick off timeout driven events by calling first time. */
     schedcpu(0); // proc.h
@@ -251,10 +251,10 @@ int main(void)
     /* iget - declared in inode.h - returns pointer to inode struct */
     rootdir = iget(rootdev, &mount[0].m_filsys, (ino_t) ROOTINO);
 		/*  ^ dev_t  ^ pointer to fs struct,    ((ino_t)2)   */
-    iunlock (rootdir);
+    iunlock(rootdir);
 
     u.u_cdir = iget(rootdev, &mount[0].m_filsys, (ino_t) ROOTINO);
-    iunlock (u.u_cdir);
+    iunlock(u.u_cdir);
     
     u.u_rdir = NULL;
 
